@@ -4,6 +4,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import okhttp3.Headers;
 import okhttp3.Interceptor;
@@ -16,9 +18,11 @@ import okio.Buffer;
 import ricky.oknet.utils.JsonPrinter;
 
 public class LoggerInterceptor implements Interceptor {
-    public static final String TAG = "OkHttpUtils";
+    public static final String TAG = "oknet";
     private String tag;
     private boolean showResponse;
+    private Lock loggingLock = new ReentrantLock();
+    private boolean isDebug = true;
 
     public LoggerInterceptor(String tag) {
         this(tag, false);
@@ -27,6 +31,8 @@ public class LoggerInterceptor implements Interceptor {
     public LoggerInterceptor(String tag, boolean showResponse) {
         if (TextUtils.isEmpty(tag)) {
             tag = TAG;
+            isDebug = false;
+            JsonPrinter.TAG = tag;
         }
         this.showResponse = showResponse;
         this.tag = tag;
@@ -34,20 +40,32 @@ public class LoggerInterceptor implements Interceptor {
 
     @Override
     public Response intercept(Chain chain) throws IOException {
-        Request request = chain.request();
-        logForRequest(request);
-        Response response = chain.proceed(request);
 
-        return logForResponse(response);
+        if (isDebug) {
+            try {
+                loggingLock.lock();
+                Request request = chain.request();
+                logForRequest(request);
+                Response response = chain.proceed(request);
+                return logForResponse(response);
+            } finally {
+                loggingLock.unlock();
+            }
+        } else {
+            return chain.proceed(chain.request());
+        }
+
+
     }
 
     private void logForRequest(Request request) {
         try {
+            //TODO 打印参数
             String url = request.url().toString();
             Headers headers = request.headers();
 
             Log.e(tag, "---------------------Request Start---------------------");
-            Log.e(tag, "---URL : " + url + request.method());
+            Log.e(tag, "---REQ : " + url + " " + request.method());
             if (headers != null && headers.size() > 0) {
                 Log.e(tag, "Headers : \n");
                 Log.e(tag, headers.toString());
@@ -71,12 +89,10 @@ public class LoggerInterceptor implements Interceptor {
 
     private Response logForResponse(Response response) {
         try {
-            Log.e(tag, "----RES------------------------------------------------");
             Response.Builder builder = response.newBuilder();
             Response clone = builder.build();
-            Log.e(tag, "URL : " + clone.request().url());
-            Log.e(tag, clone.protocol() + " " + clone.code());
-            if (!TextUtils.isEmpty(clone.message())) Log.e(tag, "Message : " + clone.message());
+            Log.e(tag, "---RES : " + clone.request().url());
+            Log.e(tag, clone.protocol() + " " + clone.code() + (!TextUtils.isEmpty(clone.message()) ? " " + clone.message() : ""));
 
             if (showResponse) {
                 ResponseBody body = clone.body();

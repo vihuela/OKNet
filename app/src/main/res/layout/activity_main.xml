@@ -10,15 +10,17 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ricky.oknets.MainActivity">
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="clear"
+        android:padding="10dp"
         android:text="clear Cache" />
 
-    <TextView
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="exec"
+        android:padding="10dp"
         android:text="exec" />
 </LinearLayout>
