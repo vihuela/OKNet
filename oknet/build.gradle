@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 23
@@ -18,8 +19,18 @@ android {
     }
 }
 
+publish {
+    userOrg = 'vihuela'//bintray.com用户名
+    groupId = 'com.ricky'//jcenter上的路径
+    artifactId = 'oknet'//项目名称
+    publishVersion = '1.0.0'//版本号
+    desc = 'OKNet is OKHttp net'//描述
+    website = 'https://github.com/vihuela/OKNet'//网站
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
 }
+//gradlew clean build bintrayUpload -PbintrayUser=vihuela -PbintrayKey=xxxxxxxxxxxxxxxxxxxxxx -PdryRun=false
