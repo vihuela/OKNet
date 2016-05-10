@@ -1,4 +1,4 @@
-package ricky.oknet;
+package ricky.oknets;
 
 import org.junit.Test;
 
