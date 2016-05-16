@@ -3,7 +3,6 @@ package ricky.oknet.model;
 import android.os.Build;
 import android.text.TextUtils;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -81,7 +80,8 @@ public class HttpHeaders implements Serializable {
 
     public void put(HttpHeaders headers) {
         if (headers != null) {
-            if (headers.headersMap != null && !headers.headersMap.isEmpty()) headersMap.putAll(headers.headersMap);
+            if (headers.headersMap != null && !headers.headersMap.isEmpty())
+                headersMap.putAll(headers.headersMap);
         }
     }
 

@@ -28,12 +28,16 @@ public abstract class DataBaseDao<T> {
         if (database != null && database.isOpen()) database.close();
     }
 
-    /** 需要数据库中有个 _id 的字段 */
+    /**
+     * 需要数据库中有个 _id 的字段
+     */
     public final int count() {
         return countColumn("_id");
     }
 
-    /** 返回一列的总记录数量 */
+    /**
+     * 返回一列的总记录数量
+     */
     public final int countColumn(String columnName) {
         String sql = "SELECT COUNT(?) FROM " + getTableName();
         SQLiteDatabase database = openReader();
@@ -46,12 +50,16 @@ public abstract class DataBaseDao<T> {
         return count;
     }
 
-    /** 删除所有数据 */
+    /**
+     * 删除所有数据
+     */
     public final int deleteAll() {
         return delete(null, null);
     }
 
-    /** 根据条件删除数据库中的数据 */
+    /**
+     * 根据条件删除数据库中的数据
+     */
     public final int delete(String whereClause, String[] whereArgs) {
         SQLiteDatabase database = openWriter();
         int result = database.delete(getTableName(), whereClause, whereArgs);
@@ -59,17 +67,23 @@ public abstract class DataBaseDao<T> {
         return result;
     }
 
-    /** 查询并返回所有对象的集合 */
+    /**
+     * 查询并返回所有对象的集合
+     */
     public final List<T> getAll() {
         return get(null, null);
     }
 
-    /** 按条件查询对象并返回集合 */
+    /**
+     * 按条件查询对象并返回集合
+     */
     public final List<T> get(String selection, String[] selectionArgs) {
         return get(null, selection, selectionArgs, null, null, null, null);
     }
 
-    /** 按条件查询对象并返回集合 */
+    /**
+     * 按条件查询对象并返回集合
+     */
     public final List<T> get(String[] columns, String selection, String[] selectionArgs, String groupBy, String having, String orderBy, String limit) {
         SQLiteDatabase database = openReader();
         List<T> list = new ArrayList<>();
@@ -81,12 +95,18 @@ public abstract class DataBaseDao<T> {
         return list;
     }
 
-    /** 将Cursor解析成对应的JavaBean */
+    /**
+     * 将Cursor解析成对应的JavaBean
+     */
     public abstract T parseCursorToBean(Cursor cursor);
 
-    /** 修改数据的方法 */
+    /**
+     * 修改数据的方法
+     */
     public abstract long replace(T t);
 
-    /** 获取对应的表名 */
+    /**
+     * 获取对应的表名
+     */
     protected abstract String getTableName();
 }

@@ -3,7 +3,6 @@ package ricky.oknet.callback;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,9 +23,13 @@ public abstract class FileCallback extends AbsCallback<File> {
 
     public static final String DM_TARGET_FOLDER = File.separator + "download" + File.separator; //下载目标文件夹
 
-    /** 目标文件存储的文件夹路径 */
+    /**
+     * 目标文件存储的文件夹路径
+     */
     private String destFileDir;
-    /** 目标文件存储的文件名 */
+    /**
+     * 目标文件存储的文件名
+     */
     private String destFileName;
 
     public FileCallback(String destFileName) {
@@ -110,7 +113,9 @@ public abstract class FileCallback extends AbsCallback<File> {
         }
     }
 
-    /** 通过 ‘？’ 和 ‘/’ 判断文件名 */
+    /**
+     * 通过 ‘？’ 和 ‘/’ 判断文件名
+     */
     private String getUrlFileName(String url) {
         int index = url.lastIndexOf('?');
         String filename;

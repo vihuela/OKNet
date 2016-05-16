@@ -104,7 +104,7 @@ public abstract class JsonCallback<T> extends EncryptCallback<T> {
                 }
             });
             Log.e("OkHttpUtils", "错误代码：" + code + "，错误信息：" + msg);
-        } catch (IOException | JSONException | JsonSyntaxException e) {
+        } catch (IOException | JSONException | JsonParseException e) {
             parseOKNetException(e);
         }
         return null;

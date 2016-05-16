@@ -2,7 +2,6 @@ package ricky.oknet.exception;
 
 import android.text.TextUtils;
 
-
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;

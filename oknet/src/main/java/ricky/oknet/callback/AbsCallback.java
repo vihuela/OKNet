@@ -2,16 +2,12 @@ package ricky.oknet.callback;
 
 import android.support.annotation.Nullable;
 
-
 import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
 import ricky.oknet.exception.ExceptionParseMgr;
 import ricky.oknet.exception.ExceptionParser;
 import ricky.oknet.exception.InternalExceptionParser;
-import ricky.oknet.exception.NetExceptionParser;
-import ricky.oknet.exception.ServerExceptionParser;
-import ricky.oknet.exception.UnknowExceptionParser;
 import ricky.oknet.request.BaseRequest;
 import ricky.oknet.utils.Cons;
 
@@ -64,7 +60,6 @@ public abstract class AbsCallback<T> {
 
     /**
      * 添加用户自定义的异常解析，可参考：{@link InternalExceptionParser}
-     *
      */
     final protected void addExceptionParser(ExceptionParser parser) {
         ExceptionParseMgr.Instance.addParse(parser);

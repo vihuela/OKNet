@@ -2,7 +2,6 @@ package ricky.oknet.request;
 
 import android.support.annotation.NonNull;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,16 +31,10 @@ import ricky.oknet.cache.CacheEntity;
 import ricky.oknet.cache.CacheManager;
 import ricky.oknet.cache.CacheMode;
 import ricky.oknet.callback.AbsCallback;
-import ricky.oknet.exception.ExceptionParser;
 import ricky.oknet.exception.HttpException;
-import ricky.oknet.exception.InternalExceptionParser;
-import ricky.oknet.exception.NetExceptionParser;
-import ricky.oknet.exception.ServerExceptionParser;
-import ricky.oknet.exception.UnknowExceptionParser;
 import ricky.oknet.https.HttpsUtils;
 import ricky.oknet.model.HttpHeaders;
 import ricky.oknet.model.HttpParams;
-import ricky.oknet.utils.Cons;
 import ricky.oknet.utils.HeaderParser;
 
 /**

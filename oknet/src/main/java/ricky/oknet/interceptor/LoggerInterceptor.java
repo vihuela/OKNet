@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.text.TextUtils;
 import android.util.Log;
 
-
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
