@@ -1,13 +1,17 @@
 package ricky.oknet.interceptor;
 
+import android.annotation.SuppressLint;
 import android.text.TextUtils;
 import android.util.Log;
 
+
 import java.io.IOException;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.Request;
@@ -18,24 +22,20 @@ import okio.Buffer;
 import ricky.oknet.utils.JsonPrinter;
 
 public class LoggerInterceptor implements Interceptor {
-    public static final String TAG = "oknet";
     private String tag;
     private boolean showResponse;
     private Lock loggingLock = new ReentrantLock();
     private boolean isDebug = true;
+    private static final String PREFIX = "  [";
+    private String requestUrl;
+    private long startTime;
 
-    public LoggerInterceptor(String tag) {
-        this(tag, false);
-    }
 
-    public LoggerInterceptor(String tag, boolean showResponse) {
-        if (TextUtils.isEmpty(tag)) {
-            tag = TAG;
-            isDebug = false;
-            JsonPrinter.TAG = tag;
-        }
+    public LoggerInterceptor(boolean isDebug, boolean showResponse, String tag) {
+        this.isDebug = isDebug;
         this.showResponse = showResponse;
         this.tag = tag;
+        JsonPrinter.TAG = tag;
     }
 
     @Override
@@ -60,25 +60,62 @@ public class LoggerInterceptor implements Interceptor {
 
     private void logForRequest(Request request) {
         try {
-            //TODO 打印参数
-            String url = request.url().toString();
+            startTime = System.nanoTime();
+
+            HttpUrl hurl = request.url();
+            requestUrl = hurl.toString();
             Headers headers = request.headers();
 
             Log.e(tag, "---------------------Request Start---------------------");
-            Log.e(tag, "---REQ : " + url + " " + request.method());
-            if (headers != null && headers.size() > 0) {
-                Log.e(tag, "Headers : \n");
-                Log.e(tag, headers.toString());
+            Log.e(tag, "---REQ : " + requestUrl + "\n");
+            Log.e(tag, "Path：" + "\n");
+            String pathMsg = "";
+            if (!TextUtils.isEmpty(request.method())) {
+                pathMsg += PREFIX + "RequestType：" + request.method() + "] " + "\n";
             }
+            if (!TextUtils.isEmpty(hurl.host())) {
+                pathMsg += PREFIX + "Host：" + request.url().host() + "] " + "\n";
+            }
+            if (hurl.port() >= 1 && hurl.port() <= 65535)
+                pathMsg += PREFIX + "Port：" + request.url().port() + "] " + "\n";
+            Log.e(tag, pathMsg);
+            //Header
+            if (headers != null && headers.size() > 0) {
+                Log.e(tag, "Headers：" + "\n");
+                for (String item : headers.names()) {
+                    if (!TextUtils.isEmpty(item) && !TextUtils.isEmpty(headers.get(item))) {
+                        Log.e(tag, PREFIX + item + "：" + headers.get(item) + "]" + "\n");
+                    }
+                }
+            }
+            //for get
+            Set<String> namePairs = hurl.queryParameterNames();
+            if (namePairs != null && namePairs.size() > 0) {
+                Log.e(tag, "Params：" + "\n");
+                for (int i = 0; i < namePairs.size(); i++) {
+                    String key = hurl.queryParameterName(i);
+                    String val = hurl.queryParameterValue(i);
+                    if (!TextUtils.isEmpty(key) && !TextUtils.isEmpty(val)) {
+                        Log.e(tag, PREFIX + key + "：" + val + "]" + "\n");
+                    }
+                }
+            }
+            //for post
             RequestBody requestBody = request.body();
             if (requestBody != null) {
+                Log.e(tag, "Params：" + "\n");
+                //Param none
+
+                //contentType
                 MediaType mediaType = requestBody.contentType();
                 if (mediaType != null) {
-                    Log.e(tag, "contentType : " + mediaType.toString());
+                    String str = mediaType.toString();
+                    Log.e(tag, PREFIX + "ContentType：" + str + "]");
                     if (isText(mediaType)) {
-                        Log.e(tag, "content : " + bodyToString(request));
+                        Log.e(tag, PREFIX + "Content：" + bodyToString(request) + "]");
                     } else {
-                        Log.e(tag, "content : " + " maybe [file part] , too large too print , ignored!");
+                        String defaultMsg = PREFIX + "Content：" + " maybe [file part] , too large too print , ignored!" + "]";
+                        Log.e(tag, defaultMsg);
                     }
                 }
             }
@@ -91,15 +128,27 @@ public class LoggerInterceptor implements Interceptor {
         try {
             Response.Builder builder = response.newBuilder();
             Response clone = builder.build();
-            Log.e(tag, "---RES : " + clone.request().url());
-            Log.e(tag, clone.protocol() + " " + clone.code() + (!TextUtils.isEmpty(clone.message()) ? " " + clone.message() : ""));
+            final HttpUrl url = clone.request().url();
+
+            long stopTime = System.nanoTime();
+
+
+            @SuppressLint("DefaultLocale")
+            String RES = String.format("---RES : [%.1fms] %s", (stopTime - startTime) / 1e6d, (url.toString().equals(requestUrl) ? "" : url));
+            //Redirect see url
+            Log.e(tag, RES);
+
+            String resMsg = "[Protocol：" + clone.protocol() + "]" +
+                    "  [Code：" + clone.code() + "]" +
+                    (!TextUtils.isEmpty(clone.message()) ? "  [Message：" + clone.message() + "]" : "");
 
             if (showResponse) {
                 ResponseBody body = clone.body();
                 if (body != null) {
                     MediaType mediaType = body.contentType();
                     if (mediaType != null) {
-                        Log.e(tag, "ContentType : " + mediaType.toString());
+
+                        Log.e(tag, resMsg + "  [ContentType：" + mediaType.toString() + "]");
                         if (isText(mediaType)) {
                             String resp = body.string();
                             //json
@@ -111,10 +160,16 @@ public class LoggerInterceptor implements Interceptor {
                             body = ResponseBody.create(mediaType, resp);
                             return response.newBuilder().body(body).build();
                         } else {
-                            Log.e(tag, "content : " + " maybe [file part] , too large too print , ignored!");
+                            Log.e(tag, "Content : " + " maybe [file part] , too large too print , ignored!");
                         }
+                    } else {
+                        Log.e(tag, resMsg);
                     }
+                } else {
+                    Log.e(tag, resMsg);
                 }
+            } else {
+                Log.e(tag, resMsg);
             }
         } catch (Exception e) {
             e.printStackTrace();

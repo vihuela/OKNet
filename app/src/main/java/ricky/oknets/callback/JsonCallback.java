@@ -5,6 +5,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,6 +17,9 @@ import java.lang.reflect.Type;
 
 import okhttp3.Response;
 import ricky.oknet.OkHttpUtils;
+import ricky.oknet.exception.ExceptionParser;
+import ricky.oknet.utils.Cons;
+import ricky.oknets.exception.TokenException;
 import ricky.oknets.utils.GsonUtils;
 
 /**
@@ -26,12 +32,31 @@ public abstract class JsonCallback<T> extends EncryptCallback<T> {
 
     @SuppressWarnings("all")
     public JsonCallback() {
-        this.clazz = (Class)((ParameterizedType)this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        this.clazz = (Class) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        //添加此回调的自定义异常
+        addExceptionParser(new ExceptionParser() {
+            @Override
+            protected boolean handler(Throwable e, IHandler handler) {
+
+                if (e != null) {
+                    String s = !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : e.getClass().getSimpleName();
+
+                    if (JSONException.class.isAssignableFrom(e.getClass())) {
+                        handler.onHandler(Cons.Error.NetWork, s);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
     }
+
+
 
     public JsonCallback(Type type) {
         this.type = type;
     }
+
 
     //该方法是子线程处理，不能做ui相关的工作
     @Override
@@ -48,6 +73,7 @@ public abstract class JsonCallback<T> extends EncryptCallback<T> {
             final String msg = jsonObject.optString("msg", "");
             final int code = jsonObject.optInt("code", 0);
             String data = jsonObject.optString("data", "");
+
             switch (code) {
                 case 0:
                     /**
@@ -57,7 +83,6 @@ public abstract class JsonCallback<T> extends EncryptCallback<T> {
                     if (clazz == String.class) return (T) data;
                     if (clazz != null) return GsonUtils.INSTANCE.gson.fromJson(data, clazz);
                     if (type != null) return GsonUtils.INSTANCE.gson.fromJson(data, type);
-                    break;
                 case 104:
                     //比如：用户授权信息无效，在此实现相应的逻辑，弹出对话或者跳转到其他页面等
                     break;
@@ -75,16 +100,12 @@ public abstract class JsonCallback<T> extends EncryptCallback<T> {
             OkHttpUtils.getInstance().getDelivery().post(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(OkHttpUtils.getContext(),"错误代码：" + code + "，错误信息：" + msg,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(OkHttpUtils.getContext(), "错误代码：" + code + "，错误信息：" + msg, Toast.LENGTH_SHORT).show();
                 }
             });
             Log.e("OkHttpUtils", "错误代码：" + code + "，错误信息：" + msg);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("OkHttpUtils", "网络IO流读取错误");
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.e("OkHttpUtils", "JSON解析异常");
+        } catch (IOException | JSONException | JsonSyntaxException e) {
+            parseOKNetException(e);
         }
         return null;
     }

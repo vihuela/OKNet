@@ -63,14 +63,19 @@ public class OkHttpUtils {
         return mInstance;
     }
 
-    /** 必须在全局Application先调用，获取context上下文，否则缓存无法使用 */
+    /**
+     * 必须在全局Application先调用，获取context上下文，否则缓存无法使用
+     */
     public static void init(Application app) {
         context = app;
     }
 
-    /** 获取全局上下文 */
+    /**
+     * 获取全局上下文
+     */
     public static Context getContext() {
-        if (context == null) throw new IllegalStateException("请先在全局Application中调用 OkHttpUtils.init() 初始化！");
+        if (context == null)
+            throw new IllegalStateException("请先在全局Application中调用 OkHttpUtils.init() 初始化！");
         return context;
     }
 
@@ -82,39 +87,53 @@ public class OkHttpUtils {
         return okHttpClientBuilder.build();
     }
 
-    /** get请求 */
+    /**
+     * get请求
+     */
     public static GetRequest get(String url) {
         return new GetRequest(url);
     }
 
-    /** post请求 */
+    /**
+     * post请求
+     */
     public static PostRequest post(String url) {
         return new PostRequest(url);
     }
 
-    /** put请求 */
+    /**
+     * put请求
+     */
     public static PutRequest put(String url) {
         return new PutRequest(url);
     }
 
-    /** head请求 */
+    /**
+     * head请求
+     */
     public static HeadRequest head(String url) {
         return new HeadRequest(url);
     }
 
-    /** delete请求 */
+    /**
+     * delete请求
+     */
     public static DeleteRequest delete(String url) {
         return new DeleteRequest(url);
     }
 
-    /** patch请求 */
+    /**
+     * patch请求
+     */
     public static OptionsRequest options(String url) {
         return new OptionsRequest(url);
     }
 
-    /** 调试模式 */
-    public OkHttpUtils debug(String tag) {
-        okHttpClientBuilder.addInterceptor(new LoggerInterceptor(tag, true));
+    /**
+     * 调试模式
+     */
+    public OkHttpUtils debug(boolean isDebug, boolean isShowResponse, String tag) {
+        okHttpClientBuilder.addInterceptor(new LoggerInterceptor(isDebug, isShowResponse, tag));
         return this;
     }
 
@@ -130,19 +149,25 @@ public class OkHttpUtils {
         }
     }
 
-    /** https的全局访问规则 */
+    /**
+     * https的全局访问规则
+     */
     public OkHttpUtils setHostnameVerifier(HostnameVerifier hostnameVerifier) {
         okHttpClientBuilder.hostnameVerifier(hostnameVerifier);
         return this;
     }
 
-    /** https的全局自签名证书 */
+    /**
+     * https的全局自签名证书
+     */
     public OkHttpUtils setCertificates(InputStream... certificates) {
         okHttpClientBuilder.sslSocketFactory(HttpsUtils.getSslSocketFactory(certificates, null, null));
         return this;
     }
 
-    /** https的全局自签名证书 */
+    /**
+     * https的全局自签名证书
+     */
     public OkHttpUtils setCertificates(String... certificates) {
         for (String certificate : certificates) {
             InputStream inputStream = new Buffer().writeUtf8(certificate).inputStream();
@@ -151,66 +176,88 @@ public class OkHttpUtils {
         return this;
     }
 
-    /** 全局读取超时时间 */
+    /**
+     * 全局读取超时时间
+     */
     public OkHttpUtils setReadTimeOut(int readTimeOut) {
         okHttpClientBuilder.readTimeout(readTimeOut, TimeUnit.MILLISECONDS);
         return this;
     }
 
-    /** 全局写入超时时间 */
+    /**
+     * 全局写入超时时间
+     */
     public OkHttpUtils setWriteTimeOut(int writeTimeout) {
         okHttpClientBuilder.writeTimeout(writeTimeout, TimeUnit.MILLISECONDS);
         return this;
     }
 
-    /** 全局连接超时时间 */
+    /**
+     * 全局连接超时时间
+     */
     public OkHttpUtils setConnectTimeout(int connectTimeout) {
         okHttpClientBuilder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
         return this;
     }
 
-    /** 全局的缓存模式 */
+    /**
+     * 全局的缓存模式
+     */
     public OkHttpUtils setCacheMode(CacheMode cacheMode) {
         mCacheMode = cacheMode;
         return this;
     }
 
-    /** 获取全局的缓存模式 */
+    /**
+     * 获取全局的缓存模式
+     */
     public CacheMode getCacheMode() {
         return mCacheMode;
     }
 
-    /** 获取全局公共请求参数 */
+    /**
+     * 获取全局公共请求参数
+     */
     public HttpParams getCommonParams() {
         return mCommonParams;
     }
 
-    /** 添加全局公共请求参数 */
+    /**
+     * 添加全局公共请求参数
+     */
     public OkHttpUtils addCommonParams(HttpParams commonParams) {
         if (mCommonParams == null) mCommonParams = new HttpParams();
         mCommonParams.put(commonParams);
         return this;
     }
 
-    /** 获取全局公共请求头 */
+    /**
+     * 获取全局公共请求头
+     */
     public HttpHeaders getCommonHeaders() {
         return mCommonHeaders;
     }
 
-    /** 添加全局公共请求参数 */
+    /**
+     * 添加全局公共请求参数
+     */
     public OkHttpUtils addCommonHeaders(HttpHeaders commonHeaders) {
         if (mCommonHeaders == null) mCommonHeaders = new HttpHeaders();
         mCommonHeaders.put(commonHeaders);
         return this;
     }
 
-    /** 添加全局拦截器 */
+    /**
+     * 添加全局拦截器
+     */
     public OkHttpUtils addInterceptor(@Nullable Interceptor interceptor) {
         okHttpClientBuilder.addInterceptor(interceptor);
         return this;
     }
 
-    /** 根据Tag取消请求 */
+    /**
+     * 根据Tag取消请求
+     */
     public void cancelTag(Object tag) {
         for (Call call : getOkHttpClient().dispatcher().queuedCalls()) {
             if (tag.equals(call.request().tag())) {

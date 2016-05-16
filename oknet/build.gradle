@@ -30,7 +30,8 @@ publish {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-annotations:23.3.0'
+    compile 'com.android.support:support-annotations:23.4.0'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
+    compile 'com.google.code.gson:gson:2.5'
 }
 //gradlew clean build bintrayUpload -PbintrayUser=vihuela -PbintrayKey=xxxxxxxxxxxxxxxxxxxxxx -PdryRun=false

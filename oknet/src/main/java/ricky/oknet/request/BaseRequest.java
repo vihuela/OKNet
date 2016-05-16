@@ -32,9 +32,16 @@ import ricky.oknet.cache.CacheEntity;
 import ricky.oknet.cache.CacheManager;
 import ricky.oknet.cache.CacheMode;
 import ricky.oknet.callback.AbsCallback;
+import ricky.oknet.exception.ExceptionParser;
+import ricky.oknet.exception.HttpException;
+import ricky.oknet.exception.InternalExceptionParser;
+import ricky.oknet.exception.NetExceptionParser;
+import ricky.oknet.exception.ServerExceptionParser;
+import ricky.oknet.exception.UnknowExceptionParser;
 import ricky.oknet.https.HttpsUtils;
 import ricky.oknet.model.HttpHeaders;
 import ricky.oknet.model.HttpParams;
+import ricky.oknet.utils.Cons;
 import ricky.oknet.utils.HeaderParser;
 
 /**
@@ -207,7 +214,9 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return headers;
     }
 
-    /** 将传递进来的参数拼接成 url */
+    /**
+     * 将传递进来的参数拼接成 url
+     */
     protected String createUrlFromParams(String url, Map<String, String> params) {
         try {
             StringBuilder sb = new StringBuilder();
@@ -226,7 +235,9 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return url;
     }
 
-    /** 通用的拼接请求头 */
+    /**
+     * 通用的拼接请求头
+     */
     protected Request.Builder appendHeaders(Request.Builder requestBuilder) {
         Headers.Builder headerBuilder = new Headers.Builder();
         ConcurrentHashMap<String, String> headerMap = headers.headersMap;
@@ -238,10 +249,14 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return requestBuilder;
     }
 
-    /** 根据不同的请求方式和参数，生成不同的RequestBody */
+    /**
+     * 根据不同的请求方式和参数，生成不同的RequestBody
+     */
     protected abstract RequestBody generateRequestBody();
 
-    /** 生成类是表单的请求体 */
+    /**
+     * 生成类是表单的请求体
+     */
     protected RequestBody generateMultipartRequestBody() {
         if (params.fileParamsMap.isEmpty()) {
             //表单提交，没有文件
@@ -268,7 +283,9 @@ public abstract class BaseRequest<R extends BaseRequest> {
         }
     }
 
-    /** 对请求body进行包装，用于回调上传进度 */
+    /**
+     * 对请求body进行包装，用于回调上传进度
+     */
     protected RequestBody wrapRequestBody(RequestBody requestBody) {
         ProgressRequestBody progressRequestBody = new ProgressRequestBody(requestBody);
         progressRequestBody.setListener(new ProgressRequestBody.Listener() {
@@ -286,18 +303,24 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return progressRequestBody;
     }
 
-    /** 根据不同的请求方式，将RequestBody转换成Request对象 */
+    /**
+     * 根据不同的请求方式，将RequestBody转换成Request对象
+     */
     protected abstract Request generateRequest(RequestBody requestBody);
 
-    /** 根据当前的请求参数，生成对应的 Call 任务 */
+    /**
+     * 根据当前的请求参数，生成对应的 Call 任务
+     */
     protected Call generateCall(Request request) {
         if (readTimeOut <= 0 && writeTimeOut <= 0 && connectTimeout <= 0 && certificates == null) {
             return OkHttpUtils.getInstance().getOkHttpClient().newCall(request);
         } else {
             OkHttpClient.Builder newClientBuilder = OkHttpUtils.getInstance().getOkHttpClient().newBuilder();
             if (readTimeOut > 0) newClientBuilder.readTimeout(readTimeOut, TimeUnit.MILLISECONDS);
-            if (writeTimeOut > 0) newClientBuilder.writeTimeout(writeTimeOut, TimeUnit.MILLISECONDS);
-            if (connectTimeout > 0) newClientBuilder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
+            if (writeTimeOut > 0)
+                newClientBuilder.writeTimeout(writeTimeOut, TimeUnit.MILLISECONDS);
+            if (connectTimeout > 0)
+                newClientBuilder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
             if (hostnameVerifier != null) newClientBuilder.hostnameVerifier(hostnameVerifier);
             if (certificates != null) {
                 newClientBuilder.sslSocketFactory(HttpsUtils.getSslSocketFactory(certificates, null, null));
@@ -311,7 +334,9 @@ public abstract class BaseRequest<R extends BaseRequest> {
         }
     }
 
-    /** 阻塞方法，同步请求执行 */
+    /**
+     * 阻塞方法，同步请求执行
+     */
     public Response execute() throws IOException {
         //添加缓存头和其他的公共头，同步请求不做缓存，缓存为空
         HeaderParser.addDefaultHeaders(this, null, null);
@@ -323,7 +348,9 @@ public abstract class BaseRequest<R extends BaseRequest> {
         return call.execute();
     }
 
-    /** 非阻塞方法，异步请求，但是回调在子线程中执行 */
+    /**
+     * 非阻塞方法，异步请求，但是回调在子线程中执行
+     */
     @SuppressWarnings("unchecked")
     public <T> void execute(AbsCallback<T> callback) {
         mCallback = callback;
@@ -382,7 +409,8 @@ public abstract class BaseRequest<R extends BaseRequest> {
                 }
                 //响应失败，一般为服务器内部错误，或者找不到页面等
                 if (responseCode >= 400 && responseCode <= 599) {
-                    sendFailResultCallback(false, call, response, null, mCallback);
+                    String info = response.newBuilder().build().message();
+                    sendFailResultCallback(false, call, response, new HttpException(responseCode + " " + info), mCallback);
                     return;
                 }
 
@@ -414,7 +442,9 @@ public abstract class BaseRequest<R extends BaseRequest> {
         }
     }
 
-    /** 失败回调，发送到主线程 */
+    /**
+     * 失败回调，发送到主线程
+     */
     @SuppressWarnings("unchecked")
     private <T> void sendFailResultCallback(final boolean isFromCache, final Call call,//
                                             final Response response, final Exception e, final AbsCallback<T> callback) {
@@ -439,7 +469,9 @@ public abstract class BaseRequest<R extends BaseRequest> {
         }
     }
 
-    /** 成功回调，发送到主线程 */
+    /**
+     * 成功回调，发送到主线程
+     */
     private <T> void sendSuccessResultCallback(final boolean isFromCache, final T t, //
                                                final Call call, final Response response, final AbsCallback<T> callback) {
         OkHttpUtils.getInstance().getDelivery().post(new Runnable() {

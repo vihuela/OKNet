@@ -5,11 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import okhttp3.Call;
 import okhttp3.Request;
 import okhttp3.Response;
 import ricky.oknet.OkHttpUtils;
 import ricky.oknet.cache.CacheManager;
 import ricky.oknet.cache.CacheMode;
+import ricky.oknet.utils.Cons;
 import ricky.oknets.callback.DialogCallback;
 import ricky.oknets.response.CityResponse;
 
@@ -33,6 +35,11 @@ public class MainActivity extends AppCompatActivity {
         OkHttpUtils.get(url)
                 .cacheMode(CacheMode.DEFAULT)
                 .execute(new DialogCallback<CityResponse.DataBean>(this) {
+                    @Override
+                    public void onSimpleError(Cons.Error error, String message) {
+                        System.out.println();
+                    }
+
                     @Override
                     public void onResponse(boolean isFromCache, CityResponse.DataBean dataBean, Request request, @Nullable Response response) {
                         System.out.println();

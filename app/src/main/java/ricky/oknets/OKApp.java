@@ -24,7 +24,7 @@ public class OKApp extends Application {
         params.put("commonParamsKey2", "这里支持中文参数");
 
         OkHttpUtils.getInstance()//
-                .debug("OkHttpUtils")                                              //是否打开调试
+                .debug(true, true, "OKNet")                                              //是否打开调试
                 .setConnectTimeout(OkHttpUtils.DEFAULT_MILLISECONDS)               //全局的连接超时时间
                 .setReadTimeOut(OkHttpUtils.DEFAULT_MILLISECONDS)                  //全局的读取超时时间
                 .setWriteTimeOut(OkHttpUtils.DEFAULT_MILLISECONDS)            //全局的写入超时时间
