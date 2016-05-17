@@ -33,7 +33,7 @@ public abstract class JsonCallback<T> extends EncryptCallback<T> {
     @SuppressWarnings("all")
     public JsonCallback() {
         this.clazz = (Class) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        //添加此回调的自定义异常
+        //此方法添加自定义异常
         addExceptionParser(new ExceptionParser() {
             @Override
             protected boolean handler(Throwable e, IHandler handler) {
