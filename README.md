@@ -26,8 +26,8 @@
 
 ## GET、POST ##
 
-	OkHttpUtils.get(url)//post
-				.tag(this)
+	OkHttpUtils.get(url)//post(url)
+				.tag(this)//可在onDestroy() OkHttpUtils.getInstance().cancelTag(this);
                 .execute(new DialogCallback<CityResponse.DataBean>(this) {
                     @Override
                     public void onSimpleError(Cons.Error error, String message) {
