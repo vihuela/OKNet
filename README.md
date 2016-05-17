@@ -136,6 +136,22 @@
             }
         });
 
+## Log ##
+
+    	05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet: Path：
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet:   [RequestType：GET] 
+		                                                       [Host：192.168.1.70] 
+		                                                       [Port：80] 
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet: Headers：
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet:   [Accept-Language：zh-CN,zh;q=0.8]
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet:   [User-Agent：Mozilla/5.0 (Linux; U; Android 5.0; zh-cn; SM-G900F Build/LRX21T) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30]
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet: Params：
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet:   [productLine：5]
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet:   [os：android]
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet:   [commonParamsKey2：这里支持中文参数]
+		05-17 10:34:22.348 27745-27960/ricky.oknets E/OKNet:   [commonParamsKey1：commonParamsValue1]
+		05-17 10:34:22.668 27745-27960/ricky.oknets E/OKNet: ---RES : [318.3ms] 
+		05-17 10:34:22.668 27745-27960/ricky.oknets E/OKNet: [Protocol：http/1.1]  [Code：200]  [Message：OK]  [ContentType：application/json;charset=UTF-8]
 
 ----------
 
