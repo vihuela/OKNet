@@ -49,7 +49,7 @@ public abstract class AbsCallback<T> {
     /**
      * 用户端可调用此方法协助处理异常，最终会回调至重写的onSimpleError()
      */
-    protected void parseOKNetException(final Exception e) {
+    final protected void parseOKNetException(final Exception e) {
         ExceptionParseMgr.Instance.parseException(e, new ExceptionParser.IHandler() {
             @Override
             public void onHandler(Cons.Error error, String message) {

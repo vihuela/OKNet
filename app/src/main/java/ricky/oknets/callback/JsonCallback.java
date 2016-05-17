@@ -1,12 +1,11 @@
 package ricky.oknets.callback;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-
 import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +18,6 @@ import okhttp3.Response;
 import ricky.oknet.OkHttpUtils;
 import ricky.oknet.exception.ExceptionParser;
 import ricky.oknet.utils.Cons;
-import ricky.oknets.exception.TokenException;
 import ricky.oknets.utils.GsonUtils;
 
 /**
@@ -36,21 +34,18 @@ public abstract class JsonCallback<T> extends EncryptCallback<T> {
         //此方法添加自定义异常
         addExceptionParser(new ExceptionParser() {
             @Override
-            protected boolean handler(Throwable e, IHandler handler) {
+            protected boolean handler(@NonNull Throwable e, @NonNull IHandler handler) {
 
-                if (e != null) {
-                    String s = !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : e.getClass().getSimpleName();
+                String s = !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : e.getClass().getSimpleName();
 
-                    if (JSONException.class.isAssignableFrom(e.getClass())) {
-                        handler.onHandler(Cons.Error.NetWork, s);
-                        return true;
-                    }
+                if (JSONException.class.isAssignableFrom(e.getClass())) {
+                    handler.onHandler(Cons.Error.NetWork, s);
+                    return true;
                 }
                 return false;
             }
         });
     }
-
 
 
     public JsonCallback(Type type) {
