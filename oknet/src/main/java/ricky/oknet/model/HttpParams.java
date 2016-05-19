@@ -23,9 +23,12 @@ public class HttpParams implements Serializable {
      */
     public ConcurrentHashMap<String, FileWrapper> fileParamsMap;
 
+    public ConcurrentHashMap<String,BytesWraper> bytesParamsMap;
+
     private void init() {
         urlParamsMap = new ConcurrentHashMap<>();
         fileParamsMap = new ConcurrentHashMap<>();
+        bytesParamsMap = new ConcurrentHashMap<>();
     }
 
     public HttpParams() {
@@ -54,6 +57,12 @@ public class HttpParams implements Serializable {
     public void put(String key, String value) {
         if (key != null && value != null) {
             urlParamsMap.put(key, value);
+        }
+    }
+
+    public void put(String key,byte[] value){
+        if (key != null && value != null) {
+            bytesParamsMap.put(key, new BytesWraper(value,guessMimeType(null)));
         }
     }
 
@@ -93,6 +102,8 @@ public class HttpParams implements Serializable {
         return MediaType.parse(contentType);
     }
 
+
+
     /**
      * 文件类型的包装类
      */
@@ -116,6 +127,19 @@ public class HttpParams implements Serializable {
                 return "nofilename";
             }
         }
+    }
+
+    public static class BytesWraper{
+        public byte[] bytes;
+        public MediaType contentType;
+        public long fileSize;
+
+        public BytesWraper(byte[] bytes,  MediaType contentType) {
+            this.bytes = bytes;
+            this.contentType = contentType;
+            this.fileSize = bytes.length;
+        }
+
     }
 
     @Override

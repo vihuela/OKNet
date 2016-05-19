@@ -272,6 +272,13 @@ public abstract class BaseRequest<R extends BaseRequest> {
                 RequestBody fileBody = RequestBody.create(entry.getValue().contentType, entry.getValue().file);
                 multipartBodybuilder.addFormDataPart(entry.getKey(), entry.getValue().fileName, fileBody);
             }
+
+            for(Map.Entry<String, HttpParams.BytesWraper> entry :params.bytesParamsMap.entrySet()){
+                RequestBody bytesBody = RequestBody.create(entry.getValue().contentType,entry.getValue().bytes);
+                multipartBodybuilder.addFormDataPart(entry.getKey(),""+System.currentTimeMillis(),bytesBody);
+            }
+
+
             return multipartBodybuilder.build();
         }
     }

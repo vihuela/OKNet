@@ -43,6 +43,7 @@ public class OkHttpUtils {
     private CacheMode mCacheMode;                         //全局缓存模式
     private static Application context;                   //全局上下文
 
+
     private OkHttpUtils() {
         okHttpClientBuilder = new OkHttpClient.Builder();
         //允许cookie的自动化管理
