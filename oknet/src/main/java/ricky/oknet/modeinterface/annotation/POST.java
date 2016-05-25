@@ -17,11 +17,6 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-/************************************************************
- * Author:  Zhouml
- * Description:     // 模块描述
- * Date: 2016/3/15
- ************************************************************/
 @Documented
 @Target(METHOD)
 @Retention(RUNTIME)

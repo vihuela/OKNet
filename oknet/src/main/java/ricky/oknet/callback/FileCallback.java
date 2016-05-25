@@ -12,12 +12,7 @@ import okhttp3.Response;
 import ricky.oknet.OkHttpUtils;
 
 /**
- * ================================================
- * 版    本：1.0
- * 创建日期：2016/1/12
- * 描    述：文件的回调下载进度监听
- * 修订历史：
- * ================================================
+ * 文件的回调下载进度监听
  */
 public abstract class FileCallback extends AbsCallback<File> {
 
@@ -46,13 +41,8 @@ public abstract class FileCallback extends AbsCallback<File> {
     }
 
     @Override
-    public File parseNetworkResponse(Response response) {
-        try {
-            return saveFile(response);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public File parseNetworkResponse(Response response) throws Exception{
+         return saveFile(response);
     }
 
     private File saveFile(Response response) throws IOException {

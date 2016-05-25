@@ -5,9 +5,6 @@ import android.app.ProgressDialog;
 import android.support.annotation.Nullable;
 import android.view.Window;
 
-
-import java.io.IOException;
-
 import okhttp3.Call;
 import okhttp3.Response;
 import ricky.oknet.request.BaseRequest;
@@ -24,14 +21,8 @@ public abstract class StringDialogCallback extends EncryptCallback<String> {
         dialog.setMessage("请求网络中...");
     }
 
-    @Override
-    public String parseNetworkResponse(Response response) {
-        try {
-            return response.body().string();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String parseNetworkResponse(Response response) throws Exception {
+        return response.body().string();
     }
 
     @Override

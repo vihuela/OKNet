@@ -273,9 +273,9 @@ public abstract class BaseRequest<R extends BaseRequest> {
                 multipartBodybuilder.addFormDataPart(entry.getKey(), entry.getValue().fileName, fileBody);
             }
 
-            for(Map.Entry<String, HttpParams.BytesWraper> entry :params.bytesParamsMap.entrySet()){
-                RequestBody bytesBody = RequestBody.create(entry.getValue().contentType,entry.getValue().bytes);
-                multipartBodybuilder.addFormDataPart(entry.getKey(),""+System.currentTimeMillis(),bytesBody);
+            for (Map.Entry<String, HttpParams.BytesWraper> entry : params.bytesParamsMap.entrySet()) {
+                RequestBody bytesBody = RequestBody.create(entry.getValue().contentType, entry.getValue().bytes);
+                multipartBodybuilder.addFormDataPart(entry.getKey(), "" + System.currentTimeMillis(), bytesBody);
             }
 
 
@@ -413,11 +413,15 @@ public abstract class BaseRequest<R extends BaseRequest> {
                     sendFailResultCallback(false, call, response, new HttpException(responseCode + " " + info), mCallback);
                     return;
                 }
-
-                T data = (T) mCallback.parseNetworkResponse(response);
-                sendSuccessResultCallback(false, data, call, response, mCallback);
-                //网络请求成功，保存缓存数据
-                handleCache(response.headers(), data);
+                try {
+                    T data = (T) mCallback.parseNetworkResponse(response);
+                    sendSuccessResultCallback(false, data, call, response, mCallback);
+                    //网络请求成功，保存缓存数据
+                    handleCache(response.headers(), data);
+                } catch (Exception e) {
+                    //一般为服务器响应成功，但是数据解析错误
+                    sendFailResultCallback(false, call, response, e, mCallback);
+                }
             }
         });
     }

@@ -18,6 +18,7 @@ import okhttp3.OkHttpClient;
 import okio.Buffer;
 import ricky.oknet.cache.CacheMode;
 import ricky.oknet.cookie.CookieJarImpl;
+import ricky.oknet.cookie.store.CookieStore;
 import ricky.oknet.cookie.store.MemoryCookieStore;
 import ricky.oknet.https.HttpsUtils;
 import ricky.oknet.interceptor.LoggerInterceptor;
@@ -42,11 +43,12 @@ public class OkHttpUtils {
     private HttpHeaders mCommonHeaders;                   //全局公共请求头
     private CacheMode mCacheMode;                         //全局缓存模式
     private static Application context;                   //全局上下文
+    private static String baseUrl;                               //全局baseUrl
 
 
     private OkHttpUtils() {
         okHttpClientBuilder = new OkHttpClient.Builder();
-        //允许cookie的自动化管理
+        //允许cookie的自动化管理，默认内存管理
         okHttpClientBuilder.cookieJar(new CookieJarImpl(new MemoryCookieStore()));
         okHttpClientBuilder.hostnameVerifier(new DefaultHostnameVerifier());
         mDelivery = new Handler(Looper.getMainLooper());
@@ -87,46 +89,52 @@ public class OkHttpUtils {
         return okHttpClientBuilder.build();
     }
 
+    private static String getTargetUrl(String url) {
+        return !url.startsWith("http") ? baseUrl + url : url;
+    }
+
     /**
      * get请求
      */
     public static GetRequest get(String url) {
-        return new GetRequest(url);
+
+        return new GetRequest(getTargetUrl(url));
     }
+
 
     /**
      * post请求
      */
     public static PostRequest post(String url) {
-        return new PostRequest(url);
+        return new PostRequest(getTargetUrl(url));
     }
 
     /**
      * put请求
      */
     public static PutRequest put(String url) {
-        return new PutRequest(url);
+        return new PutRequest(getTargetUrl(url));
     }
 
     /**
      * head请求
      */
     public static HeadRequest head(String url) {
-        return new HeadRequest(url);
+        return new HeadRequest(getTargetUrl(url));
     }
 
     /**
      * delete请求
      */
     public static DeleteRequest delete(String url) {
-        return new DeleteRequest(url);
+        return new DeleteRequest(getTargetUrl(url));
     }
 
     /**
      * patch请求
      */
     public static OptionsRequest options(String url) {
-        return new OptionsRequest(url);
+        return new OptionsRequest(getTargetUrl(url));
     }
 
     /**
@@ -147,6 +155,14 @@ public class OkHttpUtils {
         public boolean verify(String hostname, SSLSession session) {
             return true;
         }
+    }
+
+    /**
+     * 设置baseUrl
+     */
+    public OkHttpUtils baseUrl(String baseUrl) {
+        OkHttpUtils.baseUrl = baseUrl;
+        return this;
     }
 
     /**
@@ -173,6 +189,14 @@ public class OkHttpUtils {
             InputStream inputStream = new Buffer().writeUtf8(certificate).inputStream();
             setCertificates(inputStream);
         }
+        return this;
+    }
+
+    /**
+     * 全局cookie存取规则
+     */
+    public OkHttpUtils setCookieStore(CookieStore cookieStore) {
+        okHttpClientBuilder.cookieJar(new CookieJarImpl(cookieStore));
         return this;
     }
 
@@ -213,6 +237,13 @@ public class OkHttpUtils {
      */
     public CacheMode getCacheMode() {
         return mCacheMode;
+    }
+
+    /**
+     * 获取baseUrl
+     */
+    public String getBaseUrl() {
+        return baseUrl;
     }
 
     /**

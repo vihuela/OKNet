@@ -8,20 +8,23 @@
 - 自定义Callback
 - 支持重定向
 - 完善的Log日志输出
-- 完善的错误分发链，支持自定义添加错误解析器
+- **完善的错误分发链，支持自定义添加错误解析器**
 - 支持协议304缓存(解析Bean对象及其包含子对象需要implements Serializable)
+- **支持Retrofit形式调用**
 
 
 ----------
 ## in Application onCreate() ##
 
-	OkHttpUtils.init(this);
-    OkHttpUtils.getInstance()//
+	 OkHttpUtils.getInstance()//
+                .baseUrl("http://server.jeasonlzy.com/OkHttpUtils/")
                 .debug(true, true, "OKNet")                                              //是否打开调试
                 .setConnectTimeout(OkHttpUtils.DEFAULT_MILLISECONDS)               //全局的连接超时时间
                 .setReadTimeOut(OkHttpUtils.DEFAULT_MILLISECONDS)                  //全局的读取超时时间
                 .setWriteTimeOut(OkHttpUtils.DEFAULT_MILLISECONDS)            //全局的写入超时时间
                 /*.addCommonHeaders(headers)   */                                      //设置全局公共头
+				// .setCookieStore(new MemoryCookieStore())                           //cookie使用内存缓存（app退出后，cookie消失）
+                .setCookieStore(new PersistentCookieStore())                   //cookie持久化存储，如果cookie不过期，则一直有效
                 .addCommonParams(params);
 
 ## GET、POST ##
@@ -153,9 +156,36 @@
 		05-17 10:34:22.668 27745-27960/ricky.oknets E/OKNet: ---RES : [318.3ms] 
 		05-17 10:34:22.668 27745-27960/ricky.oknets E/OKNet: [Protocol：http/1.1]  [Code：200]  [Message：OK]  [ContentType：application/json;charset=UTF-8]
 
+## Retrofit形式调用 ##
+	Api:
+	@GET("http://192.168.1.70/api/common/cityList")//?productLine=5&os=android
+    NetRequest<CityResponse.DataBean> cityList(@PARAMS("productLine") int productLine, @PARAMS("os") String os);
+
+    @CACHEMODE(CacheMode.FIRST_CACHE_THEN_REQUEST)
+    @GET("method")
+    NetRequest<RequestInfo> method();
+
+	Invoke:
+	ApiUtils.Instance.getApi().method().execute(new JsonCallback<RequestInfo>() {
+            @Override
+            public void onResponse(boolean isFromCache, RequestInfo requestInfo, Request request, @Nullable Response response) {
+                System.out.println();
+            }
+
+            @Override
+            public void onSimpleError(Cons.Error error, String message) {
+                System.out.println();
+            }
+        });
+
 ----------
 
 ## Gradle ##
-compile 'com.ricky:oknet:1.1.1'
+**compile 'com.ricky:oknet:1.1.2'**
+
+## License ##
+No Fucking License
+> Source part Sources Online open source projects<br>
+> thanks my brother [mingge](https://github.com/zhoumingliang "mingge")
 
 

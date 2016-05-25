@@ -44,7 +44,7 @@ public enum ExceptionParseMgr {
     public void addParse(ExceptionParser parser) {
 
         if (parser != null) {
-            parsers.add(0, parser);
+            parsers.add(0, parser);//自定义异常优先
             connectionParse();
         }
     }
