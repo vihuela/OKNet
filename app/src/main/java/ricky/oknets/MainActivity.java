@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSimpleError(Cons.Error error, String message) {
-                System.out.println();
+                System.out.println();//可重写onError
             }
         });
     }
