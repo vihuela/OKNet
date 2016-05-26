@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ricky.oknet.cache.CacheMode;
-import ricky.oknet.modeinterface.annotation.CACHEMODE;
+import ricky.oknet.modeinterface.annotation.CACHE;
 import ricky.oknet.modeinterface.annotation.GET;
 import ricky.oknet.modeinterface.annotation.PARAMS;
 import ricky.oknet.modeinterface.annotation.POST;
@@ -53,8 +53,8 @@ public class NetUtil implements InvocationHandler {
             url = post.value();
             type = NetRequestData.HttpRequestType.GET;
         }
-        if (method.isAnnotationPresent(CACHEMODE.class)) {
-            CACHEMODE cacheModeA = method.getAnnotation(CACHEMODE.class);
+        if (method.isAnnotationPresent(CACHE.class)) {
+            CACHE cacheModeA = method.getAnnotation(CACHE.class);
             cacheMode = cacheModeA.value();
         }
         data = defaultProcess(method, args, url, type);

@@ -22,6 +22,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Target(METHOD)
 @Retention(RUNTIME)
-public @interface CACHEMODE {
+public @interface CACHE {
     CacheMode value() default CacheMode.DEFAULT;
 }
