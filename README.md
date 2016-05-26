@@ -161,7 +161,7 @@
 	@GET("http://192.168.1.70/api/common/cityList")//?productLine=5&os=android
     NetRequest<CityResponse.DataBean> cityList(@PARAMS("productLine") int productLine, @PARAMS("os") String os);
 
-    @CACHEMODE(CacheMode.FIRST_CACHE_THEN_REQUEST)
+    @CACHE(CacheMode.FIRST_CACHE_THEN_REQUEST)
     @GET("method")
     NetRequest<RequestInfo> method();
 
@@ -181,7 +181,7 @@
 ----------
 
 ## Gradle ##
-**compile 'com.ricky:oknet:1.1.2'**
+**compile 'com.ricky:oknet:1.1.3'**
 
 ## License ##
 No Fucking License
