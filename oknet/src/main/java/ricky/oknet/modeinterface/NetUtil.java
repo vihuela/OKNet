@@ -29,19 +29,24 @@ import ricky.oknet.modeinterface.annotation.CACHE;
 import ricky.oknet.modeinterface.annotation.GET;
 import ricky.oknet.modeinterface.annotation.PARAMS;
 import ricky.oknet.modeinterface.annotation.POST;
+import ricky.oknet.modeinterface.annotation.POSTJSON;
 import ricky.oknet.model.HttpParams;
+import ricky.oknet.utils.GsonUtils;
 
 @SuppressWarnings("all")
 public class NetUtil implements InvocationHandler {
 
+    private NetRequestData.HttpRequestType type;
+    private CacheMode cacheMode = CacheMode.DEFAULT;
+    private String url;
+
     @Override
     public NetRequest invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-        String url = null;
-        CacheMode cacheMode = CacheMode.DEFAULT;
-        NetRequestData.HttpRequestType type = null;
+
         NetRequestData.HttpRequestContent requestType = containFileOrBitmap(args);
         NetRequestData data;
 
+        //method
         if (method.isAnnotationPresent(POST.class)) {
             POST post = method.getAnnotation(POST.class);
             url = post.value();
@@ -53,6 +58,12 @@ public class NetUtil implements InvocationHandler {
             url = post.value();
             type = NetRequestData.HttpRequestType.GET;
         }
+        if (method.isAnnotationPresent(POSTJSON.class)) {
+            POSTJSON postjson = method.getAnnotation(POSTJSON.class);
+            url = postjson.value();
+            type = NetRequestData.HttpRequestType.POSTJSON;
+        }
+        //cache
         if (method.isAnnotationPresent(CACHE.class)) {
             CACHE cacheModeA = method.getAnnotation(CACHE.class);
             cacheMode = cacheModeA.value();
@@ -110,28 +121,34 @@ public class NetUtil implements InvocationHandler {
      */
     private NetRequestData defaultProcess(Method method, Object[] objs, String url, NetRequestData.HttpRequestType type) {
 
-        List<String> paramsName = getMethodParameterNamesByAnnotation(method);
-
         HttpParams httpParams = new HttpParams();
-        int i = 0;
-        for (String name : paramsName) {
-            if (objs == null || objs[i] == null) {
-                httpParams.put(name, "");
-            } else if (File.class.isInstance(objs[i])) {
-                httpParams.put(name, (File) objs[i]);
-            } else if (Bitmap.class.isInstance(objs[i])) {
-                httpParams.put(name, bitmap2bytes((Bitmap) objs[i]));
-            } else {
-                httpParams.put(name, objs[i].toString() + "");
-            }
-            i++;
-        }
-
         NetRequestData netRequestData = new NetRequestData();
         netRequestData.url = url;
         netRequestData.type = type;
         netRequestData.methodName = method.getName();
-        netRequestData.params = httpParams;
+
+        if (type == NetRequestData.HttpRequestType.POSTJSON) {
+
+            netRequestData.jsonParam = GsonUtils.INSTANCE.gson.toJson(objs[0]);
+        } else {
+
+            List<String> paramsName = getMethodParameterNamesByAnnotation(method);
+            int i = 0;
+            for (String name : paramsName) {
+                if (objs == null || objs[i] == null) {
+                    httpParams.put(name, "");
+                } else if (File.class.isInstance(objs[i])) {
+                    httpParams.put(name, (File) objs[i]);
+                } else if (Bitmap.class.isInstance(objs[i])) {
+                    httpParams.put(name, bitmap2bytes((Bitmap) objs[i]));
+                } else {
+                    httpParams.put(name, objs[i].toString() + "");
+                }
+                i++;
+            }
+
+            netRequestData.params = httpParams;
+        }
         return netRequestData;
     }
 

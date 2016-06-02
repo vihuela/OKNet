@@ -20,13 +20,16 @@ import ricky.oknet.OkHttpUtils;
 import ricky.oknet.cache.CacheManager;
 import ricky.oknet.cache.CacheMode;
 import ricky.oknet.callback.FileCallback;
+import ricky.oknet.callback.StringCallback;
 import ricky.oknet.modeinterface.NetRequest;
 import ricky.oknet.modeinterface.NetUtil;
 import ricky.oknet.request.BaseRequest;
 import ricky.oknet.utils.Cons;
 import ricky.oknets.callback.DialogCallback;
 import ricky.oknets.callback.JsonCallback;
+import ricky.oknets.model.RequestBean;
 import ricky.oknets.response.CityResponse;
+import ricky.oknets.response.CommonBen;
 import ricky.oknets.response.RequestInfo;
 import ricky.oknets.utils.ApiUtils;
 
@@ -60,12 +63,29 @@ public class MainActivity extends AppCompatActivity {
 //        }
 
         //uploadTest
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
         } else {
             uploadTest();
-        }
+        }*/
+        //uploadJsonTest
+        uploadJsonTest();
 
+    }
+
+    private void uploadJsonTest() {
+        RequestBean requestBean = new RequestBean();
+        ApiUtils.Instance.getApi().postJson(requestBean).execute(new JsonCallback<CommonBen>() {
+            @Override
+            public void onResponse(boolean isFromCache, CommonBen commonBen, Request request, @Nullable Response response) {
+                System.out.println();
+            }
+
+            @Override
+            public void onSimpleError(Cons.Error error, String message) {
+                System.out.println();
+            }
+        });
     }
 
     private void uploadTest() {

@@ -14,11 +14,11 @@ package ricky.oknet.modeinterface;
 import ricky.oknet.OkHttpUtils;
 import ricky.oknet.callback.AbsCallback;
 import ricky.oknet.request.BaseRequest;
+import ricky.oknet.request.GetRequest;
+import ricky.oknet.request.PostRequest;
 
 public class NetRequest<T> {
 
-
-    BaseRequest baseRequest;
 
     public Object what;
     private NetRequestData data;
@@ -36,16 +36,24 @@ public class NetRequest<T> {
 
         switch (data.type) {
             case GET:
-                baseRequest = OkHttpUtils.get(data.url);
+                execInner(OkHttpUtils.get(data.url), callback);
                 break;
             case POST:
-                baseRequest = OkHttpUtils.post(data.url);
+                execInner(OkHttpUtils.post(data.url), callback);
+                break;
+            case POSTJSON:
+                PostRequest r = OkHttpUtils.post(data.url);
+                r.postJson(data.jsonParam);
+                execInner(r, callback);
                 break;
         }
-        baseRequest.cacheMode(data.cacheMode);
-        baseRequest.params(data.params);
-        baseRequest.tag(this);
-        baseRequest.execute(callback);
+    }
+
+    private void execInner(BaseRequest req, AbsCallback callback) {
+        req.cacheMode(data.cacheMode);
+        req.params(data.params);
+        req.tag(this);
+        req.execute(callback);
     }
 
     public void cancel() {

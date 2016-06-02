@@ -1,4 +1,4 @@
-package ricky.oknets.utils;
+package ricky.oknet.utils;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;

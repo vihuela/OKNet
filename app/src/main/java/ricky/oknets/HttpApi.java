@@ -8,7 +8,10 @@ import ricky.oknet.modeinterface.annotation.CACHE;
 import ricky.oknet.modeinterface.annotation.GET;
 import ricky.oknet.modeinterface.annotation.PARAMS;
 import ricky.oknet.modeinterface.annotation.POST;
+import ricky.oknet.modeinterface.annotation.POSTJSON;
+import ricky.oknets.model.RequestBean;
 import ricky.oknets.response.CityResponse;
+import ricky.oknets.response.CommonBen;
 import ricky.oknets.response.RequestInfo;
 
 public interface HttpApi {
@@ -26,6 +29,9 @@ public interface HttpApi {
 
     @POST("upload")
     NetRequest<RequestInfo> upload(@PARAMS("param1") String param1, @PARAMS("file") File file);
+
+    @POSTJSON("http://120.24.233.226/ztx/v100/guide/getGuideCommments")
+    NetRequest<CommonBen> postJson(RequestBean requestBean);
 
 
 }

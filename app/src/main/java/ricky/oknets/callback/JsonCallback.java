@@ -12,7 +12,7 @@ import java.lang.reflect.Type;
 import okhttp3.Response;
 import ricky.oknet.exception.ExceptionParser;
 import ricky.oknet.utils.Cons;
-import ricky.oknets.utils.GsonUtils;
+import ricky.oknet.utils.GsonUtils;
 
 /**
  * 默认将返回的数据解析成需要的Bean,可以是 BaseBean，String，List，Map
@@ -58,12 +58,12 @@ public abstract class JsonCallback<T> extends EncryptCallback<T> {
          * 以下只是一个示例，具体业务具体实现
          */
         JSONObject jsonObject = new JSONObject(responseData);
-        final String msg = jsonObject.optString("msg", "");
-        final int code = jsonObject.optInt("code", 0);
-        String data = jsonObject.optString("data", "");
+        final String msg = jsonObject.optString("message", "");
+        final int code = jsonObject.optInt("status", 0);
+        String data = jsonObject.toString();
 
         switch (code) {
-            case 0:
+            case 1:
                 /**
                  * code = 0 代表成功，默认实现了Gson解析成相应的实体Bean返回，可以自己替换成fastjson等
                  * 对于返回参数，先支持 String，然后优先支持class类型的字节码，最后支持type类型的参数

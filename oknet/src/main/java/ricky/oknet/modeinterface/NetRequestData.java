@@ -19,7 +19,7 @@ import ricky.oknet.model.HttpParams;
 public class NetRequestData {
 
     public enum HttpRequestType {
-        GET, POST
+        GET, POST,POSTJSON
     }
 
     public enum HttpRequestContent {
@@ -36,5 +36,6 @@ public class NetRequestData {
 
     String methodName;
     HttpParams params;
+    String jsonParam;
     CacheMode cacheMode;
 }

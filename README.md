@@ -181,7 +181,7 @@
 ----------
 
 ## Gradle ##
-**compile 'com.ricky:oknet:1.1.4'**
+**compile 'com.ricky:oknet:1.1.5'**
 
 ## License ##
 No Fucking License
