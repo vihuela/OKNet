@@ -3,7 +3,7 @@ package ricky.oknets.model;
 /**
  * @author ricky.yao on 2016/6/2.
  */
-public class RequestBean {
+public class RequestBean extends CommonRequest{
 
     /**
      * userId : 34461
@@ -14,4 +14,8 @@ public class RequestBean {
     public String userId = "34461";
     public int createAt = 0;
     public int size = 100;
+
+
+    public String updateAt;
+
 }
