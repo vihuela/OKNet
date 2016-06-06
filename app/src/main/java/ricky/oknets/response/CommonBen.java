@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author ricky.yao on 2016/6/2.
  */
-public class CommonBen implements Serializable {
+public class CommonBen  implements Serializable{
 
 
     public String name;
@@ -24,7 +24,7 @@ public class CommonBen implements Serializable {
     public int status;
     public List<List<ItemBean>> item;
 
-    public static class ItemBean {
+    public static class ItemBean implements Serializable{
         public String name;
         public String logo;
         public int id;

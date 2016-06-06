@@ -11,6 +11,7 @@
 package ricky.oknet.modeinterface;
 
 import android.graphics.Bitmap;
+import android.support.annotation.CheckResult;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,11 +35,21 @@ import ricky.oknet.model.HttpParams;
 import ricky.oknet.utils.GsonUtils;
 
 @SuppressWarnings("all")
-public class NetUtil implements InvocationHandler {
+public class NetUtil<F> implements InvocationHandler {
 
     private NetRequestData.HttpRequestType type;
     private CacheMode cacheMode = CacheMode.DEFAULT;
     private String url;
+    private Class<F> jsonClazz;
+    private ICustomerJsonBean<F> iCustomerJsonBean;
+
+
+    public NetUtil(ICustomerJsonBean<F> callback) {
+        if (callback != null) {
+            jsonClazz = (Class<F>) ((ParameterizedType) callback.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+            iCustomerJsonBean = callback;
+        }
+    }
 
     @Override
     public NetRequest invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
@@ -128,8 +139,15 @@ public class NetUtil implements InvocationHandler {
         netRequestData.methodName = method.getName();
 
         if (type == NetRequestData.HttpRequestType.POSTJSON) {
-
-            netRequestData.jsonParam = GsonUtils.INSTANCE.gson.toJson(objs[0]);
+            Object target = objs[0];
+            if (iCustomerJsonBean != null) {
+                try {
+                    target = iCustomerJsonBean.onInterceptRequest((F) target);
+                } catch (ClassCastException e) {
+                    throw new IllegalArgumentException(target.getClass().getSimpleName() + "must extends " + jsonClazz.getSimpleName());
+                }
+            }
+            netRequestData.jsonParam = GsonUtils.INSTANCE.gson.toJson(target);
         } else {
 
             List<String> paramsName = getMethodParameterNamesByAnnotation(method);
@@ -181,6 +199,15 @@ public class NetUtil implements InvocationHandler {
             }
         }
         return parameteNames;
+    }
+
+    /**
+     * 所有请求的基类参数类
+     * @param <F>
+     */
+    public static interface ICustomerJsonBean<F> {
+        @CheckResult
+        F onInterceptRequest(F f);
     }
 
 }
