@@ -11,6 +11,7 @@
 - **完善的错误分发链，支持自定义添加错误解析器**
 - 支持协议304缓存(解析Bean对象及其包含子对象需要implements Serializable)
 - **支持Retrofit形式调用**
+- Retrofit模式下，支持参数为json时通用参数拦截修改
 
 
 ----------
@@ -181,7 +182,7 @@
 ----------
 
 ## Gradle ##
-**compile 'com.ricky:oknet:1.2.0'**
+**compile 'com.ricky:oknet:1.2.1'**
 
 ## License ##
 No Fucking License
