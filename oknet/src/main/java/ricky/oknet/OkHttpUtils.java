@@ -46,6 +46,19 @@ public class OkHttpUtils {
     private static String baseUrl;                               //全局baseUrl
 
 
+    public boolean isInnerDebug() {
+        return isInnerDebug;
+    }
+
+    //内部逻辑调试
+    public OkHttpUtils setInnerDebug(boolean innerDebug) {
+        isInnerDebug = innerDebug;
+        return this;
+    }
+
+    private boolean isInnerDebug;
+
+
     private OkHttpUtils() {
         okHttpClientBuilder = new OkHttpClient.Builder();
         //允许cookie的自动化管理，默认内存管理

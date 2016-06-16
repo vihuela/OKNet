@@ -27,6 +27,7 @@ public class OKApp extends Application {
         OkHttpUtils.getInstance()//
                 .baseUrl("http://server.jeasonlzy.com/OkHttpUtils/")
                 .debug(true, true, "OKNet")                                              //是否打开调试
+                .setInnerDebug(false)
                 .setConnectTimeout(OkHttpUtils.DEFAULT_MILLISECONDS)               //全局的连接超时时间
                 .setReadTimeOut(OkHttpUtils.DEFAULT_MILLISECONDS)                  //全局的读取超时时间
                 .setWriteTimeOut(OkHttpUtils.DEFAULT_MILLISECONDS)            //全局的写入超时时间

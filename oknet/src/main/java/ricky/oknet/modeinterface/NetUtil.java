@@ -13,6 +13,11 @@ package ricky.oknet.modeinterface;
 import android.graphics.Bitmap;
 import android.support.annotation.CheckResult;
 
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
+
+import org.json.JSONException;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -139,15 +144,23 @@ public class NetUtil<F> implements InvocationHandler {
         netRequestData.methodName = method.getName();
 
         if (type == NetRequestData.HttpRequestType.POSTJSON) {
-            Object target = objs[0];
-            if (iCustomerJsonBean != null) {
-                try {
-                    target = iCustomerJsonBean.onInterceptRequest((F) target);
-                } catch (ClassCastException e) {
-                    throw new IllegalArgumentException(target.getClass().getSimpleName() + "must extends " + jsonClazz.getSimpleName());
+            netRequestData.jsonParam = null;
+            if (objs != null && objs.length > 0) {
+                if (objs.length == 1) {
+                    Object target = objs[0];
+                    if (iCustomerJsonBean != null) {
+                        try {
+                            target = iCustomerJsonBean.onInterceptRequest((F) target);
+                        } catch (ClassCastException e) {
+                            throw new IllegalArgumentException(target.getClass().getSimpleName() + " must extends " + jsonClazz.getSimpleName());
+                        }
+                    }
+                    netRequestData.jsonParam = GsonUtils.INSTANCE.gson.toJson(target);
+                } else {
+                    throw new IllegalArgumentException(method.getName() + " allow a parameter only");
                 }
             }
-            netRequestData.jsonParam = GsonUtils.INSTANCE.gson.toJson(target);
+
         } else {
 
             List<String> paramsName = getMethodParameterNamesByAnnotation(method);
@@ -203,6 +216,7 @@ public class NetUtil<F> implements InvocationHandler {
 
     /**
      * 所有请求的基类参数类
+     *
      * @param <F>
      */
     public static interface ICustomerJsonBean<F> {

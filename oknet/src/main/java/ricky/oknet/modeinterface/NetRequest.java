@@ -13,11 +13,14 @@ package ricky.oknet.modeinterface;
 
 import ricky.oknet.OkHttpUtils;
 import ricky.oknet.callback.AbsCallback;
+import ricky.oknet.lifecycle.INetLifecycle;
+import ricky.oknet.lifecycle.INetViewLifecycle;
+import ricky.oknet.lifecycle.NetLifecycleMgr;
+import ricky.oknet.lifecycle.OKNetBehavior;
 import ricky.oknet.request.BaseRequest;
-import ricky.oknet.request.GetRequest;
 import ricky.oknet.request.PostRequest;
 
-public class NetRequest<T> {
+public class NetRequest<T> implements INetLifecycle {
 
 
     public Object what;
@@ -25,6 +28,11 @@ public class NetRequest<T> {
 
     public NetRequest(NetRequestData data) {
         this.data = data;
+    }
+
+    public NetRequest<T> bind(INetViewLifecycle viewLifecycle) {
+        NetLifecycleMgr.Instance.addRequest(viewLifecycle, this);
+        return this;
     }
 
     public void execute(AbsCallback<T> callback) {
@@ -57,6 +65,17 @@ public class NetRequest<T> {
     }
 
     public void cancel() {
+        NetLifecycleMgr.Instance.$("cancel");
         OkHttpUtils.getInstance().cancelTag(this);
+    }
+
+    @Override
+    public void onNetBehavior(@OKNetBehavior int behavior) {
+        switch (behavior) {
+            case OKNetBehavior.STOP:
+            case OKNetBehavior.DESTROY:
+                cancel();
+                break;
+        }
     }
 }

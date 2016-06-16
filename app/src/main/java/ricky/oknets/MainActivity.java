@@ -1,18 +1,13 @@
 package ricky.oknets;
 
-import android.Manifest;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import java.io.File;
-import java.lang.reflect.Proxy;
 
 import okhttp3.Request;
 import okhttp3.Response;
@@ -20,9 +15,10 @@ import ricky.oknet.OkHttpUtils;
 import ricky.oknet.cache.CacheManager;
 import ricky.oknet.cache.CacheMode;
 import ricky.oknet.callback.FileCallback;
-import ricky.oknet.callback.StringCallback;
+import ricky.oknet.lifecycle.NetLifecycleMgr;
+import ricky.oknet.lifecycle.OKNetBehavior;
+import ricky.oknet.lifecycle.INetViewLifecycle;
 import ricky.oknet.modeinterface.NetRequest;
-import ricky.oknet.modeinterface.NetUtil;
 import ricky.oknet.request.BaseRequest;
 import ricky.oknet.utils.Cons;
 import ricky.oknets.callback.DialogCallback;
@@ -33,7 +29,7 @@ import ricky.oknets.response.CommonBen;
 import ricky.oknets.response.RequestInfo;
 import ricky.oknets.utils.ApiUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements INetViewLifecycle{
 
     private String url;
 
@@ -70,12 +66,12 @@ public class MainActivity extends AppCompatActivity {
         }*/
         //uploadJsonTest
         uploadJsonTest();
-
     }
 
     private void uploadJsonTest() {
         RequestBean requestBean = new RequestBean();
-        ApiUtils.Instance.getApi().postJson(requestBean).execute(new JsonCallback<CommonBen>() {
+        NetRequest<CommonBen> commonBenNetRequest = ApiUtils.Instance.getApi().postJson(requestBean);
+        commonBenNetRequest.bind(this).execute(new JsonCallback<CommonBen>() {
             @Override
             public void onResponse(boolean isFromCache, CommonBen commonBen, Request request, @Nullable Response response) {
                 System.out.println();
@@ -86,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println();
             }
         });
+
     }
 
     private void uploadTest() {
@@ -190,5 +187,17 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println();
                     }
                 });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //cancel request
+        NetLifecycleMgr.Instance.onNetBehavior(this,OKNetBehavior.DESTROY);
     }
 }
