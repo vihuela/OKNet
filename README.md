@@ -12,6 +12,7 @@
 - 支持协议304缓存(解析Bean对象及其包含子对象需要implements Serializable)
 - **支持Retrofit形式调用**
 - Retrofit模式下，支持参数为json时通用参数拦截修改
+- Retrofit模式下，支持view与网络绑定取消请求
 
 
 ----------
@@ -179,10 +180,28 @@
             }
         });
 
-----------
+    PostJson下拦截参数：
+    public HttpApi getApi() {
+            return ApiHelper.get(HttpApi.class/*, new NetUtil.ICustomerJsonBean<CommonRequest>() {
+                @Override
+                public CommonRequest onInterceptRequest(CommonRequest commonRequest) {
+                    commonRequest.token = "123456";
+                    CommonRequest.CheckSignBean checkSignBean = new CommonRequest.CheckSignBean();
+                    checkSignBean.appVersion = 123;
+                    checkSignBean.mac = "sdfskldfsld";
+                    commonRequest.checkSign = checkSignBean;
+                    return commonRequest;
+                }
+            }*/);
+        }
+    与View层绑定
+    View的基类实现 implements INetViewLifecycle
+    ApiUtils.Instance.getApi().method().bind(this).execute
+    在需要的地方执行NetLifecycleMgr.Instance.onNetBehavior(this,OKNetBehavior.DESTROY);
+-----------------
 
 ## Gradle ##
-**compile 'com.ricky:oknet:1.2.1'**
+**compile 'com.ricky:oknet:1.2.2'**
 
 ## License ##
 No Fucking License
