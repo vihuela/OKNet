@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 25
     buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "ricky.oknets"
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
     }
@@ -22,7 +22,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.ricky:oknet:1.2.2'
-    /*compile project(':oknet')*/
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    /*compile 'com.ricky:oknet:1.2.2'*/
+    compile project(':oknet')
 }

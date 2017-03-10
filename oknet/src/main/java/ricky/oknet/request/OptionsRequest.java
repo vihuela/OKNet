@@ -1,40 +1,38 @@
 package ricky.oknet.request;
 
-import android.support.annotation.NonNull;
 
 import java.io.IOException;
 
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import ricky.oknet.model.HttpHeaders;
+import ricky.oknet.utils.HttpUtils;
+import ricky.oknet.utils.OkLogger;
 
-public class OptionsRequest extends BaseRequest<OptionsRequest> {
-
-    private RequestBody requestBody;
+/**
+ * ================================================
+ * 作    者：廖子尧
+ * 版    本：1.0
+ * 创建日期：2016/1/16
+ * 描    述：Options请求
+ * 修订历史：
+ * ================================================
+ */
+public class OptionsRequest extends BaseBodyRequest<OptionsRequest> {
 
     public OptionsRequest(String url) {
         super(url);
-    }
-
-    public OptionsRequest requestBody(@NonNull RequestBody requestBody) {
-        this.requestBody = requestBody;
-        return this;
+        method = "OPTIONS";
     }
 
     @Override
-    protected RequestBody generateRequestBody() {
-        if (requestBody != null) return requestBody;
-        return generateMultipartRequestBody();
-    }
-
-    @Override
-    protected Request generateRequest(RequestBody requestBody) {
-        Request.Builder requestBuilder = new Request.Builder();
+    public Request generateRequest(RequestBody requestBody) {
         try {
-            headers.put("Content-Length", String.valueOf(requestBody.contentLength()));
+            headers.put(HttpHeaders.HEAD_KEY_CONTENT_LENGTH, String.valueOf(requestBody.contentLength()));
         } catch (IOException e) {
-            e.printStackTrace();
+            OkLogger.e(e);
         }
-        appendHeaders(requestBuilder);
+        Request.Builder requestBuilder = HttpUtils.appendHeaders(headers);
         return requestBuilder.method("OPTIONS", requestBody).url(url).tag(tag).build();
     }
 }

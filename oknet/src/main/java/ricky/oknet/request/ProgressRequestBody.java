@@ -1,5 +1,6 @@
 package ricky.oknet.request;
 
+
 import java.io.IOException;
 
 import okhttp3.MediaType;
@@ -9,6 +10,8 @@ import okio.BufferedSink;
 import okio.ForwardingSink;
 import okio.Okio;
 import okio.Sink;
+import ricky.oknet.OkGo;
+import ricky.oknet.utils.OkLogger;
 
 /**
  * 包装的请求体，处理进度，可以处理任何的 RequestBody，
@@ -33,30 +36,24 @@ public class ProgressRequestBody extends RequestBody {
         this.listener = listener;
     }
 
-    /**
-     * 重写调用实际的响应体的contentType
-     */
+    /** 重写调用实际的响应体的contentType */
     @Override
     public MediaType contentType() {
         return delegate.contentType();
     }
 
-    /**
-     * 重写调用实际的响应体的contentLength
-     */
+    /** 重写调用实际的响应体的contentLength */
     @Override
     public long contentLength() {
         try {
             return delegate.contentLength();
         } catch (IOException e) {
-            e.printStackTrace();
+            OkLogger.e(e);
+            return -1;
         }
-        return -1;
     }
 
-    /**
-     * 重写进行写入
-     */
+    /** 重写进行写入 */
     @Override
     public void writeTo(BufferedSink sink) throws IOException {
         countingSink = new CountingSink(sink);
@@ -65,9 +62,7 @@ public class ProgressRequestBody extends RequestBody {
         bufferedSink.flush();  //必须调用flush，否则最后一部分数据可能不会被写入
     }
 
-    /**
-     * 包装
-     */
+    /** 包装 */
     protected final class CountingSink extends ForwardingSink {
         private long bytesWritten = 0;   //当前写入字节数
         private long contentLength = 0;  //总字节长度，避免多次调用contentLength()方法
@@ -85,15 +80,14 @@ public class ProgressRequestBody extends RequestBody {
             bytesWritten += byteCount;
 
             long curTime = System.currentTimeMillis();
-            //每200毫秒刷新一次数据
-            if (curTime - lastRefreshUiTime >= 200 || bytesWritten == contentLength) {
+            //每100毫秒刷新一次数据
+            if (curTime - lastRefreshUiTime >= OkGo.REFRESH_TIME || bytesWritten == contentLength) {
                 //计算下载速度
                 long diffTime = (curTime - lastRefreshUiTime) / 1000;
                 if (diffTime == 0) diffTime += 1;
                 long diffBytes = bytesWritten - lastWriteBytes;
                 long networkSpeed = diffBytes / diffTime;
-                if (listener != null)
-                    listener.onRequestProgress(bytesWritten, contentLength, networkSpeed);
+                if (listener != null) listener.onRequestProgress(bytesWritten, contentLength, networkSpeed);
 
                 lastRefreshUiTime = System.currentTimeMillis();
                 lastWriteBytes = bytesWritten;
@@ -101,9 +95,7 @@ public class ProgressRequestBody extends RequestBody {
         }
     }
 
-    /**
-     * 回调接口
-     */
+    /** 回调接口 */
     public interface Listener {
         void onRequestProgress(long bytesWritten, long contentLength, long networkSpeed);
     }

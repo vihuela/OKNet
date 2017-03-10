@@ -1,41 +1,38 @@
 package ricky.oknet.request;
 
-import android.text.TextUtils;
 
-import okhttp3.MediaType;
+import java.io.IOException;
+
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import ricky.oknet.model.HttpHeaders;
+import ricky.oknet.utils.HttpUtils;
+import ricky.oknet.utils.OkLogger;
 
-public class DeleteRequest extends BaseRequest<DeleteRequest> {
-
-    public static final MediaType MEDIA_TYPE_PLAIN = MediaType.parse("text/plain;charset=utf-8");
-
-    private String content;
-    private MediaType mediaType;
+/**
+ * ================================================
+ * 作    者：廖子尧
+ * 版    本：1.0
+ * 创建日期：2016/1/16
+ * 描    述：
+ * 修订历史：
+ * ================================================
+ */
+public class DeleteRequest extends BaseBodyRequest<DeleteRequest> {
 
     public DeleteRequest(String url) {
         super(url);
-    }
-
-    public DeleteRequest content(String content) {
-        this.content = content;
-        this.mediaType = MEDIA_TYPE_PLAIN;
-        return this;
+        method = "DELETE";
     }
 
     @Override
-    protected RequestBody generateRequestBody() {
-        if (TextUtils.isEmpty(content)) {
-            throw new IllegalStateException("必须设置delete请求的 content，请调用content(String content) 方法");
+    public Request generateRequest(RequestBody requestBody) {
+        try {
+            headers.put(HttpHeaders.HEAD_KEY_CONTENT_LENGTH, String.valueOf(requestBody.contentLength()));
+        } catch (IOException e) {
+            OkLogger.e(e);
         }
-        return RequestBody.create(mediaType, content);
-    }
-
-    @Override
-    protected Request generateRequest(RequestBody requestBody) {
-        Request.Builder requestBuilder = new Request.Builder();
-        appendHeaders(requestBuilder);
-        url = createUrlFromParams(url, params.urlParamsMap);
+        Request.Builder requestBuilder = HttpUtils.appendHeaders(headers);
         return requestBuilder.delete(requestBody).url(url).tag(tag).build();
     }
 }

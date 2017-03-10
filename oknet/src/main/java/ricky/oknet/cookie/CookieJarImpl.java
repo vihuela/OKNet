@@ -8,6 +8,15 @@ import okhttp3.CookieJar;
 import okhttp3.HttpUrl;
 import ricky.oknet.cookie.store.CookieStore;
 
+/**
+ * ================================================
+ * 作    者：jeasonlzy（廖子尧）Github地址：https://github.com/jeasonlzy
+ * 版    本：1.0
+ * 创建日期：2016/1/12
+ * 描    述：CookieJar的实现类，默认管理了用户自己维护的cookie
+ * 修订历史：
+ * ================================================
+ */
 public class CookieJarImpl implements CookieJar {
 
     private CookieStore cookieStore;
@@ -20,13 +29,13 @@ public class CookieJarImpl implements CookieJar {
     }
 
     @Override
-    public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-        cookieStore.saveCookies(url, cookies);
+    public synchronized void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
+        cookieStore.saveCookie(url, cookies);
     }
 
     @Override
-    public List<Cookie> loadForRequest(HttpUrl url) {
-        return cookieStore.loadCookies(url);
+    public synchronized List<Cookie> loadForRequest(HttpUrl url) {
+        return cookieStore.loadCookie(url);
     }
 
     public CookieStore getCookieStore() {
