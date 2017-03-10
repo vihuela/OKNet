@@ -42,7 +42,7 @@ import ricky.oknet.utils.OkLogger;
  * ================================================
  */
 public class OkGo {
-    public static final int DEFAULT_MILLISECONDS = 60000;       //默认的超时时间
+    public static final int DEFAULT_MILLISECONDS = 10000;       //默认的超时时间
     public static int REFRESH_TIME = 100;                       //回调刷新时间（单位ms）
 
     private Handler mDelivery;                                  //用于在主线程执行的调度器
@@ -55,6 +55,7 @@ public class OkGo {
     private long mCacheTime = CacheEntity.CACHE_NEVER_EXPIRE;   //全局缓存过期时间,默认永不过期
     private static Application context;                         //全局上下文
     private CookieJarImpl cookieJar;                            //全局 Cookie 实例
+    private static String baseUrl;                                     //全局baseUrl
 
     private OkGo() {
         okHttpClientBuilder = new OkHttpClient.Builder();
@@ -100,32 +101,32 @@ public class OkGo {
 
     /** get请求 */
     public static GetRequest get(String url) {
-        return new GetRequest(url);
+        return new GetRequest(getTargetUrl(url));
     }
 
     /** post请求 */
     public static PostRequest post(String url) {
-        return new PostRequest(url);
+        return new PostRequest(getTargetUrl(url));
     }
 
     /** put请求 */
     public static PutRequest put(String url) {
-        return new PutRequest(url);
+        return new PutRequest(getTargetUrl(url));
     }
 
     /** head请求 */
     public static HeadRequest head(String url) {
-        return new HeadRequest(url);
+        return new HeadRequest(getTargetUrl(url));
     }
 
     /** delete请求 */
     public static DeleteRequest delete(String url) {
-        return new DeleteRequest(url);
+        return new DeleteRequest(getTargetUrl(url));
     }
 
     /** patch请求 */
     public static OptionsRequest options(String url) {
-        return new OptionsRequest(url);
+        return new OptionsRequest(getTargetUrl(url));
     }
 
     /** 调试模式,默认打开所有的异常调试 */
@@ -310,5 +311,16 @@ public class OkGo {
         for (Call call : getOkHttpClient().dispatcher().runningCalls()) {
             call.cancel();
         }
+    }
+
+    /** 设置baseUrl*/
+    public OkGo baseUrl(String baseUrl) {
+        OkGo.baseUrl = baseUrl;
+        return this;
+    }
+
+    /** 拼接baseUrl*/
+    private  static String getTargetUrl(String url) {
+        return !url.startsWith("http") || !url.startsWith("https") ? baseUrl + url : url;
     }
 }

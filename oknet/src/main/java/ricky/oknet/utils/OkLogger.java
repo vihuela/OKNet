@@ -12,7 +12,7 @@ import android.util.Log;
  * ================================================
  */
 public class OkLogger {
-    private static boolean isLogEnable = true;
+    public static boolean isLogEnable = true;
 
     public static String tag = "OkGo";
 

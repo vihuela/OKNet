@@ -3,12 +3,12 @@ package ricky.oknets;
 import java.io.File;
 
 import ricky.oknet.cache.CacheMode;
-import ricky.oknet.modeinterface.NetRequest;
-import ricky.oknet.modeinterface.annotation.CACHE;
-import ricky.oknet.modeinterface.annotation.GET;
-import ricky.oknet.modeinterface.annotation.PARAMS;
-import ricky.oknet.modeinterface.annotation.POST;
-import ricky.oknet.modeinterface.annotation.POSTJSON;
+import ricky.oknet.retrofit.NetRequest;
+import ricky.oknet.retrofit.anno.CACHE;
+import ricky.oknet.retrofit.anno.GET;
+import ricky.oknet.retrofit.anno.JSON;
+import ricky.oknet.retrofit.anno.POST;
+import ricky.oknet.retrofit.anno.Param;
 import ricky.oknets.model.RequestBean;
 import ricky.oknets.response.CityResponse;
 import ricky.oknets.response.CommonBen;
@@ -18,7 +18,7 @@ public interface HttpApi {
 
     @GET("http://192.168.1.70/api/common/cityList")
 //?productLine=5&os=android
-    NetRequest<CityResponse.DataBean> cityList(@PARAMS("productLine") int productLine, @PARAMS("os") String os);
+    NetRequest<CityResponse.DataBean> cityList(@Param("productLine") int productLine, @Param("os") String os);
 
     @CACHE(CacheMode.FIRST_CACHE_THEN_REQUEST)
     @GET("method")
@@ -28,9 +28,9 @@ public interface HttpApi {
     NetRequest<File> downFile();
 
     @POST("upload")
-    NetRequest<RequestInfo> upload(@PARAMS("param1") String param1, @PARAMS("file") File file);
+    NetRequest<RequestInfo> upload(@Param("param1") String param1, @Param("file") File file);
 
-    @POSTJSON("http://120.24.233.226/ztx/v100/guide/getGuideCommments")
+    @JSON("http://120.24.233.226/ztx/v100/guide/getGuideCommments")
     NetRequest<CommonBen> postJson(RequestBean requestBean);
 
 
