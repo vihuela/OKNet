@@ -1,37 +1,28 @@
 package ricky.oknets;
 
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.Formatter;
 import android.view.View;
 
 import java.io.File;
 
-import okhttp3.Request;
+import okhttp3.Call;
 import okhttp3.Response;
-import ricky.oknet.OkHttpUtils;
+import ricky.oknet.OkGo;
 import ricky.oknet.cache.CacheManager;
-import ricky.oknet.cache.CacheMode;
 import ricky.oknet.callback.FileCallback;
-import ricky.oknet.lifecycle.NetLifecycleMgr;
-import ricky.oknet.lifecycle.OKNetBehavior;
 import ricky.oknet.lifecycle.INetViewLifecycle;
-import ricky.oknet.modeinterface.NetRequest;
 import ricky.oknet.request.BaseRequest;
-import ricky.oknet.utils.Cons;
-import ricky.oknets.callback.DialogCallback;
+import ricky.oknet.retrofit.Net;
+import ricky.oknet.utils.Error;
 import ricky.oknets.callback.JsonCallback;
-import ricky.oknets.model.RequestBean;
-import ricky.oknets.response.CityResponse;
-import ricky.oknets.response.CommonBen;
-import ricky.oknets.response.RequestInfo;
-import ricky.oknets.utils.ApiUtils;
+import ricky.oknets.request.Request;
+import ricky.oknets.utils.Api;
 
-public class MainActivity extends AppCompatActivity implements INetViewLifecycle{
+public class MainActivity extends AppCompatActivity implements INetViewLifecycle {
 
-    private String url;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,160 +35,154 @@ public class MainActivity extends AppCompatActivity implements INetViewLifecycle
     }
 
     public void exec(View view) {
-
-
-//        normal();
-
-//        retrofit();
-
-        //downTest
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-//        } else {
-//            downTest();
-//        }
-
-        //uploadTest
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
-        } else {
-            uploadTest();
-        }*/
-        //uploadJsonTest
-        uploadJsonTest();
+        fileUpload();
     }
 
-    private void uploadJsonTest() {
-        RequestBean requestBean = new RequestBean();
-        NetRequest<CommonBen> commonBenNetRequest = ApiUtils.Instance.getApi().postJson(requestBean);
-        commonBenNetRequest.bind(this).execute(new JsonCallback<CommonBen>() {
+
+    public void post() {
+        Api.getApi().post("param1").execute(new JsonCallback<Request.Res>() {
+
             @Override
-            public void onResponse(boolean isFromCache, CommonBen commonBen, Request request, @Nullable Response response) {
+            public void success(Request.Res res, boolean fromCache) {
                 System.out.println();
             }
 
             @Override
-            public void onSimpleError(Cons.Error error, String message) {
+            public void error(Error error, String message) {
                 System.out.println();
             }
         });
-
     }
 
-    private void uploadTest() {
-        File f = new File("/storage/emulated/0/WorldGo/microMsg/image/microMsg.1462347415447.jpg");
-        ApiUtils.Instance.getApi().upload("param1", f).execute(new JsonCallback<RequestInfo>() {
+    public void fileUpload() {
+        File avatar = new File("/storage/emulated/0/DCIM/camera/IMG_20160823_112713.jpg");
+        final Net<Request.Res> net = Api.getApi().fileUpload("ricky", avatar, avatar);
+        net.execute(new JsonCallback<Request.Res>() {
+
+            @Override
+            public void success(Request.Res res, boolean fromCache) {
+                System.out.println();
+            }
+
+            @Override
+            public void error(Error error, String message) {
+                System.out.println();
+            }
+
             @Override
             public void upProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
-                super.upProgress(currentSize, totalSize, progress, networkSpeed);
-            }
+                String downloadLength = Formatter.formatFileSize(getApplicationContext(), currentSize);
+                String totalLength = Formatter.formatFileSize(getApplicationContext(), totalSize);
+                String netSpeed = Formatter.formatFileSize(getApplicationContext(), networkSpeed);
 
-            @Override
-            public void onResponse(boolean isFromCache, RequestInfo requestInfo, Request request, @Nullable Response response) {
-                System.out.println();
-            }
-
-            @Override
-            public void onSimpleError(Cons.Error error, String message) {
-                System.out.println();
+                System.out.println(downloadLength + "/" + totalLength);
+                System.out.println(netSpeed + "/S");
+                System.out.println((Math.round(progress * 10000) * 1.0f / 100) + "%");
             }
         });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            switch (requestCode) {
-                case 1:
-                    downTest();
-                    break;
-                case 2:
-                    uploadTest();
-                    break;
+        OkGo.getInstance().getDelivery().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                net.cancel();
             }
-        }
+        }, 3000);
     }
 
-    private void downTest() {
-
-        ApiUtils.Instance.getApi().downFile().execute(new FileCallback("test.apk") {
+    public void fileDownload() {
+        Api.getApi().fileDown("fucking_awesome").execute(new FileCallback("OkGo.apk") {
             @Override
             public void onBefore(BaseRequest request) {
-                super.onBefore(request);
+                System.out.println("正在下载中");
             }
 
             @Override
-            public void onResponse(boolean isFromCache, File file, Request request, @Nullable Response response) {
-                System.out.println();
+            public void onSuccess(File file, Call call, Response response) {
+                System.out.println("下载完成");
             }
 
             @Override
             public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
-                super.downloadProgress(currentSize, totalSize, progress, networkSpeed);
+                String downloadLength = Formatter.formatFileSize(getApplicationContext(), currentSize);
+                String totalLength = Formatter.formatFileSize(getApplicationContext(), totalSize);
+                String netSpeed = Formatter.formatFileSize(getApplicationContext(), networkSpeed);
+
+                System.out.println(downloadLength + "/" + totalLength);
+                System.out.println(netSpeed + "/S");
+                System.out.println((Math.round(progress * 10000) * 1.0f / 100) + "%");
             }
 
             @Override
-            public void onSimpleError(Cons.Error error, String message) {
+            public void onError(Call call, @Nullable Response response, @Nullable Exception e) {
+                super.onError(call, response, e);
+                System.out.println("下载出错");
+            }
+        });
+
+    }
+
+    public void get() {
+        Api.getApi().get("param1", 2).execute(new JsonCallback<Request.Res>() {
+
+            @Override
+            public void success(Request.Res res, boolean fromCache) {
+                System.out.println();
+            }
+
+            @Override
+            public void error(Error error, String message) {
+                System.out.println();
+            }
+
+        });
+    }
+
+    public void string() {
+        Api.getApi().string("abcdefg").execute(new JsonCallback<Request.Res>() {
+
+            @Override
+            public void success(Request.Res res, boolean fromCache) {
+                System.out.println();
+            }
+
+            @Override
+            public void error(Error error, String message) {
                 System.out.println();
             }
         });
     }
 
-    private void retrofit() {
+    public void json() {
+        Api.getApi().json(new Request.Req()).execute(new JsonCallback<Request.Res>() {
 
-
-        /*ApiUtils.Instance.getApi().cityList(5, "android").execute(new DialogCallback<CityResponse.DataBean>(this) {
             @Override
-            public void onResponse(boolean isFromCache, CityResponse.DataBean dataBean, Request request, @Nullable Response response) {
+            public void success(Request.Res res, boolean fromCache) {
                 System.out.println();
             }
 
             @Override
-            public void onSimpleError(Cons.Error error, String message) {
+            public void error(Error error, String message) {
                 System.out.println();
-            }
-        });*/
-        ApiUtils.Instance.getApi().method().execute(new JsonCallback<RequestInfo>() {
-            @Override
-            public void onResponse(boolean isFromCache, RequestInfo requestInfo, Request request, @Nullable Response response) {
-                System.out.println();
-            }
-
-            @Override
-            public void onSimpleError(Cons.Error error, String message) {
-                System.out.println();//可重写onError
             }
         });
     }
 
-    private void normal() {
-        url = "http://192.168.1.70/api/common/cityList?productLine=5&os=android";
-        OkHttpUtils.get(url)
-                .cacheMode(CacheMode.DEFAULT)
-                .execute(new DialogCallback<CityResponse.DataBean>(this) {
-                    @Override
-                    public void onSimpleError(Cons.Error error, String message) {
-                        System.out.println();
-                    }
+    public void cache() {
+        Api.getApi().cache().execute(new JsonCallback<Request.Res>() {
 
-                    @Override
-                    public void onResponse(boolean isFromCache, CityResponse.DataBean dataBean, Request request, @Nullable Response response) {
-                        System.out.println();
-                    }
-                });
-    }
+            @Override
+            public void success(Request.Res res, boolean fromCache) {
+                System.out.println();
+            }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
+            @Override
+            public void error(Error error, String message) {
+                System.out.println();
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //cancel request
-        NetLifecycleMgr.Instance.onNetBehavior(this,OKNetBehavior.DESTROY);
     }
 }

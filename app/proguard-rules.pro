@@ -15,3 +15,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+# INoProguard
+-keep interface ricky.oknet.utils.INoProguard {*;}
+-keep interface * extends ricky.oknet.utils.INoProguard {*;}
+-keep class * implements ricky.oknet.utils.INoProguard {*;}
+-keepclasseswithmembernames class * implements ricky.oknet.utils.INoProguard {*;}

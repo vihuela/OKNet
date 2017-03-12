@@ -1,9 +1,11 @@
 package ricky.oknets.model;
 
+import ricky.oknets.common.CommonRequest;
+
 /**
  * @author ricky.yao on 2016/6/2.
  */
-public class RequestBean extends CommonRequest{
+public class RequestBean extends CommonRequest {
 
     /**
      * userId : 34461

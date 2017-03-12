@@ -12,9 +12,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 @Target(ElementType.PARAMETER)
 @Retention(RUNTIME)
-/**
- * 非json、string、bytes模式下，标记方法参数
- */
-public @interface Param {
-    String value() default "";
+
+public @interface BytesParam {
+    String value() default "bytes";
 }

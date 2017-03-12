@@ -4,8 +4,12 @@ package ricky.oknet.callback;
 import okhttp3.Call;
 import okhttp3.Response;
 import ricky.oknet.convert.Converter;
+import ricky.oknet.exception.parser.ExceptionParseMgr;
+import ricky.oknet.exception.parser.ExceptionParser;
 import ricky.oknet.request.BaseRequest;
 import ricky.oknet.cache.CacheMode;
+import ricky.oknet.utils.Cons;
+import ricky.oknet.utils.Error;
 
 /**
  * ================================================
@@ -52,6 +56,24 @@ public abstract class AbsCallback<T> implements Converter<T> {
 
     /** 请求失败，响应错误，数据解析错误等，都会回调该方法， UI线程 */
     public void onError(Call call, Response response, Exception e) {
+
+        //使用错误解析器分发错误
+        ExceptionParseMgr.Instance.parseException(e, new ExceptionParser.IHandler() {
+            @Override
+            public void onHandler(Error error, String message) {
+                onParsedError(error, message);
+            }
+        });
+    }
+
+    /**添加自定义异常解析器，可参考#NetExceptionParser的实现*/
+    final protected void addExceptionParser(ExceptionParser parser) {
+        ExceptionParseMgr.Instance.addParse(parser);
+    }
+
+    /**经过解析器分发之后的错误*/
+    public void onParsedError(Error error, String message){
+
     }
 
     /** 缓存失败的回调,UI线程 */

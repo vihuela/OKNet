@@ -16,6 +16,7 @@ import ricky.oknet.cache.CacheMode;
 import ricky.oknet.callback.AbsCallback;
 import ricky.oknet.callback.AbsCallbackWrapper;
 import ricky.oknet.exception.OkGoException;
+import ricky.oknet.exception.ServerException;
 import ricky.oknet.model.HttpHeaders;
 import ricky.oknet.model.Response;
 import ricky.oknet.request.BaseRequest;
@@ -152,7 +153,8 @@ public class CacheCall<T> implements Call<T> {
                 }
                 //响应失败，一般为服务器内部错误，或者找不到页面等
                 if (responseCode == 404 || responseCode >= 500) {
-                    sendFailResultCallback(false, call, response, OkGoException.INSTANCE("服务器数据异常!"));
+                    String info = response.newBuilder().build().message();
+                    sendFailResultCallback(false, call, response, ServerException.INSTANCE("服务器数据异常：" + responseCode + " " + info));
                     return;
                 }
 
@@ -192,7 +194,9 @@ public class CacheCall<T> implements Call<T> {
         }
     }
 
-    /** 失败回调，发送到主线程 */
+    /**
+     * 失败回调，发送到主线程
+     */
     @SuppressWarnings("unchecked")
     private void sendFailResultCallback(final boolean isFromCache, final okhttp3.Call call, final okhttp3.Response response, final Exception e) {
         final CacheMode cacheMode = baseRequest.getCacheMode();
@@ -231,7 +235,9 @@ public class CacheCall<T> implements Call<T> {
         }
     }
 
-    /** 成功回调，发送到主线程 */
+    /**
+     * 成功回调，发送到主线程
+     */
     private void sendSuccessResultCallback(final boolean isFromCache, final T t, final okhttp3.Call call, final okhttp3.Response response) {
         final CacheMode cacheMode = baseRequest.getCacheMode();
 

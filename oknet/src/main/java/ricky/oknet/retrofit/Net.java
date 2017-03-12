@@ -10,17 +10,17 @@ import ricky.oknet.lifecycle.OKNetBehavior;
 import ricky.oknet.request.BaseRequest;
 import ricky.oknet.request.PostRequest;
 
-public class NetRequest<T> implements INetLifecycle {
+public class Net<T> implements INetLifecycle {
 
 
     public Object what;
     private NetRequestData data;
 
-    public NetRequest(NetRequestData data) {
+    Net(NetRequestData data) {
         this.data = data;
     }
 
-    public NetRequest<T> bind(INetViewLifecycle viewLifecycle) {
+    public Net<T> bind(INetViewLifecycle viewLifecycle) {
         NetLifecycleMgr.Instance.addRequest(viewLifecycle, this);
         return this;
     }
@@ -38,6 +38,18 @@ public class NetRequest<T> implements INetLifecycle {
                 break;
             case POST:
                 execInner(OkGo.post(data.url), callback);
+                break;
+            case DELETE:
+                execInner(OkGo.delete(data.url), callback);
+                break;
+            case HEAD:
+                execInner(OkGo.head(data.url), callback);
+                break;
+            case OPTIONS:
+                execInner(OkGo.options(data.url), callback);
+                break;
+            case PUT:
+                execInner(OkGo.put(data.url), callback);
                 break;
             case JSON:
                 PostRequest rJson = OkGo.post(data.url);
@@ -62,14 +74,17 @@ public class NetRequest<T> implements INetLifecycle {
             req.cacheMode(data.cacheMode);
             req.cacheTime(data.cacheTime);
         }
+        if (data.header != null) {
+            req.headers(data.header.key, data.header.value);
+        }
         req.params(data.params);
-        req.tag(this);
+        req.tag(data.methodName);
         req.execute(callback);
     }
 
     public void cancel() {
         NetLifecycleMgr.Instance.$("cancel");
-        OkGo.getInstance().cancelTag(this);
+        OkGo.getInstance().cancelTag(data.methodName);
     }
 
     @Override

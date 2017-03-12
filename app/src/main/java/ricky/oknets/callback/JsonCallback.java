@@ -3,96 +3,123 @@ package ricky.oknets.callback;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.stream.JsonReader;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import okhttp3.Call;
 import okhttp3.Response;
-import ricky.oknet.exception.ExceptionParser;
-import ricky.oknet.utils.Cons;
-import ricky.oknet.utils.GsonUtils;
+import ricky.oknet.callback.AbsCallback;
+import ricky.oknet.exception.parser.ExceptionParser;
+import ricky.oknet.request.BaseRequest;
+import ricky.oknet.utils.DataConvert;
+import ricky.oknet.utils.Error;
+import ricky.oknets.common.CommonResponse;
+import ricky.oknets.exception.TokenException;
 
-/**
- * 默认将返回的数据解析成需要的Bean,可以是 BaseBean，String，List，Map
- */
-public abstract class JsonCallback<T> extends EncryptCallback<T> {
+public abstract class JsonCallback<T> extends AbsCallback<T> {
 
-    private Class<T> clazz;
-    private Type type;
 
-    @SuppressWarnings("all")
-    public JsonCallback() {
-        this.clazz = (Class) ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-        //此方法添加自定义异常
+    @Override
+    public void onBefore(BaseRequest request) {
+        super.onBefore(request);
+
+        //动态加入头字段、参数
+//        request.headers("header1", "HeaderValue1")//
+//                .params("params1", "ParamsValue1")//
+//                .params("token", "3215sdf13ad1f65asd4f3ads1f");
+
+        //自定义异常解析
         addExceptionParser(new ExceptionParser() {
             @Override
             protected boolean handler(@NonNull Throwable e, @NonNull IHandler handler) {
 
-                String s = !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : e.getClass().getSimpleName();
-
-                if (JSONException.class.isAssignableFrom(e.getClass())) {
-                    handler.onHandler(Cons.Error.Internal, s);
+                if (TokenException.class.isAssignableFrom(e.getClass())) {
+                    handler.onHandler(Error.Invalid, getMessageFromThrowable(e));
                     return true;
                 }
+
                 return false;
             }
         });
     }
 
-
-    public JsonCallback(Type type) {
-        this.type = type;
-    }
-
-
-    //该方法是子线程处理，不能做ui相关的工作
     @Override
-    public T parseNetworkResponse(Response response) throws Exception {
-        String responseData = response.body().string();
-        if (TextUtils.isEmpty(responseData)) return null;
-
-        /**
-         * 一般来说，服务器返回的响应码都包含 code，msg，data 三部分，在此根据自己的业务需要完成相应的逻辑判断
-         * 以下只是一个示例，具体业务具体实现
-         */
-        JSONObject jsonObject = new JSONObject(responseData);
-        final String msg = jsonObject.optString("message", "");
-        final int code = jsonObject.optInt("status", 0);
-        String data = jsonObject.toString();
-
-        switch (code) {
-            case 1:
-                /**
-                 * code = 0 代表成功，默认实现了Gson解析成相应的实体Bean返回，可以自己替换成fastjson等
-                 * 对于返回参数，先支持 String，然后优先支持class类型的字节码，最后支持type类型的参数
-                 */
-                if (clazz == String.class) return (T) data;
-                if (clazz != null) return GsonUtils.INSTANCE.gson.fromJson(data, clazz);
-                if (type != null) return GsonUtils.INSTANCE.gson.fromJson(data, type);
-            case 104:
-                //比如：用户授权信息无效，在此实现相应的逻辑，弹出对话或者跳转到其他页面等
-                throw new IllegalStateException("用户授权信息无效");
-            case 105:
-                //比如：用户收取信息已过期，在此实现相应的逻辑，弹出对话或者跳转到其他页面等
-                throw new IllegalStateException("用户收取信息已过期");
-            case 106:
-                //比如：用户账户被禁用，在此实现相应的逻辑，弹出对话或者跳转到其他页面等
-                throw new IllegalStateException("用户账户被禁用");
-            case 300:
-                //比如：其他乱七八糟的等，在此实现相应的逻辑，弹出对话或者跳转到其他页面等
-                throw new IllegalStateException("其他乱七八糟的等");
-            default:
-                throw new IllegalStateException("错误代码：" + code + "，错误信息：" + msg);
+    @SuppressWarnings("unchecked")
+    public T convertSuccess(Response response) throws Exception {
+        Type type = null;
+        try {
+            type = ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        } catch (ClassCastException e) {
+            //没有传递泛型
+            e.printStackTrace();
         }
-        //如果要更新UI，需要使用handler，可以如下方式实现，也可以自己写handler
-        /*OkHttpUtils.getInstance().getDelivery().post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(OkHttpUtils.getContext(), "错误代码：" + code + "，错误信息：" + msg, Toast.LENGTH_SHORT).show();
+        if (type == String.class) {
+            String responseData = response.body().string();
+            T t = TextUtils.isEmpty(responseData) ? (T) response.toString() : (T) responseData;
+            response.close();
+            return t;
+        } else {
+            JsonReader jsonReader = new JsonReader(response.body().charStream());
+            T t = DataConvert.fromJson(jsonReader, type);
+            response.close();
+            //与业务有关
+            if (CommonResponse.class.isInstance(t)) {
+                CommonResponse t1 = (CommonResponse) t;
+                //t1.code = 10086;//测试自定义异常
+                switch (t1.code) {
+                    //返回正确
+                    case 0:
+                        return t;
+                    case 10086:
+                        throw new TokenException("token is bad");
+                    default:
+                        throw new IllegalArgumentException("unKnow error");
+                }
+
+            } else {
+                return t;
             }
-        });
-        return null;*/
+
+        }
     }
+
+    @Override
+    public void onSuccess(T t, Call call, Response response) {
+        success(t, false);
+    }
+
+    @Override
+    public void onCacheSuccess(T t, Call call) {
+        super.onCacheSuccess(t, call);
+        success(t, true);
+
+    }
+
+    @Override
+    public void onParsedError(Error error, String message) {
+        super.onParsedError(error, message);
+        error(error, message);
+    }
+
+    /**
+     * 通常实现以下回调即可--------------------------------------------------------------------------
+     */
+
+    /**
+     * success
+     * @param t t
+     * @param fromCache 是否来自缓存
+     */
+    public abstract void success(T t, boolean fromCache);
+
+    /**
+     * error
+     * @param error 错误类型
+     * @param message 错误详细文本
+     */
+    public abstract void error(Error error, String message);
+
+
 }

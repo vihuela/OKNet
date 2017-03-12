@@ -5,11 +5,20 @@ import android.app.ProgressDialog;
 import android.support.annotation.Nullable;
 import android.view.Window;
 
-import okhttp3.Call;
-import okhttp3.Response;
+import ricky.oknet.callback.StringCallback;
 import ricky.oknet.request.BaseRequest;
 
-public abstract class StringDialogCallback extends EncryptCallback<String> {
+
+/**
+ * ================================================
+ * 作    者：jeasonlzy（廖子尧）
+ * 版    本：1.0
+ * 创建日期：2016/4/8
+ * 描    述：我的Github地址  https://github.com/jeasonlzy
+ * 修订历史：
+ * ================================================
+ */
+public abstract class StringDialogCallback extends StringCallback {
 
     private ProgressDialog dialog;
 
@@ -19,10 +28,6 @@ public abstract class StringDialogCallback extends EncryptCallback<String> {
         dialog.setCanceledOnTouchOutside(false);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.setMessage("请求网络中...");
-    }
-
-    public String parseNetworkResponse(Response response) throws Exception {
-        return response.body().string();
     }
 
     @Override
@@ -35,8 +40,8 @@ public abstract class StringDialogCallback extends EncryptCallback<String> {
     }
 
     @Override
-    public void onAfter(boolean isFromCache, @Nullable String s, Call call, Response response, @Nullable Exception e) {
-        super.onAfter(isFromCache, s, call, response, e);
+    public void onAfter(@Nullable String s, @Nullable Exception e) {
+        super.onAfter(s, e);
         //网络请求结束后关闭对话框
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();

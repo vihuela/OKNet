@@ -6,14 +6,18 @@ import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.view.Window;
 
-
-import okhttp3.Call;
-import okhttp3.Response;
 import ricky.oknet.callback.BitmapCallback;
 import ricky.oknet.request.BaseRequest;
 
+
 /**
- * 请求图图片的时候显示对话框
+ * ================================================
+ * 作    者：廖子尧
+ * 版    本：1.0
+ * 创建日期：2016/1/14
+ * 描    述：请求图图片的时候显示对话框
+ * 修订历史：
+ * ================================================
  */
 public abstract class BitmapDialogCallback extends BitmapCallback {
 
@@ -35,7 +39,7 @@ public abstract class BitmapDialogCallback extends BitmapCallback {
     }
 
     @Override
-    public void onAfter(boolean isFromCache, @Nullable Bitmap bitmap, Call call, @Nullable Response response, @Nullable Exception e) {
+    public void onAfter(@Nullable Bitmap bitmap, @Nullable Exception e) {
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
