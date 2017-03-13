@@ -8,7 +8,7 @@ import ricky.oknet.utils.Cons;
 import ricky.oknet.utils.Error;
 
 
-public class ServerExceptionParser extends ExceptionParser {
+class ServerExceptionParser extends ExceptionParser {
 
     @Override
     protected boolean handler(@NonNull Throwable e, @NonNull IHandler handler) {

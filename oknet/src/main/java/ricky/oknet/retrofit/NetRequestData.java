@@ -5,11 +5,11 @@ import java.lang.reflect.Type;
 import ricky.oknet.cache.CacheMode;
 import ricky.oknet.model.HttpParams;
 
-public class NetRequestData {
+class NetRequestData {
 
     HttpRequestContent requestContent;
     Type[] types;
-    String methodName;
+    String methodName;//use tag
     String url;
     HttpRequestType type;
 

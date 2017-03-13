@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import ricky.oknet.utils.Cons;
 import ricky.oknet.utils.Error;
 
-public class NetExceptionParser extends ExceptionParser {
+class NetExceptionParser extends ExceptionParser {
 
 
     @Override

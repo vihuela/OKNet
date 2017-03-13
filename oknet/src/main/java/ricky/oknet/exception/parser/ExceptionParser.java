@@ -13,6 +13,10 @@ import ricky.oknet.utils.Error;
 public abstract class ExceptionParser {
     private ExceptionParser nextParser;
 
+    public static String getMessageFromThrowable(@NonNull Throwable e) {
+        return !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : e.getClass().getSimpleName();
+    }
+
     void handleException(Throwable e, IHandler handler) {
         //first
         if (e != null && !handler(e, handler)) {
@@ -45,10 +49,6 @@ public abstract class ExceptionParser {
 
     public interface IHandler {
         void onHandler(Error error, String message);
-    }
-
-    protected final String getMessageFromThrowable(@NonNull Throwable e) {
-        return !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : e.getClass().getSimpleName();
     }
 
 }

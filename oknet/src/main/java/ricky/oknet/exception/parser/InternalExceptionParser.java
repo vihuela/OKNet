@@ -13,7 +13,7 @@ import ricky.oknet.utils.Error;
 /**
  * only json error check
  */
-public class InternalExceptionParser extends ExceptionParser {
+class InternalExceptionParser extends ExceptionParser {
 
 
     @Override

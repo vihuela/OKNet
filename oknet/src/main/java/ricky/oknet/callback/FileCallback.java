@@ -38,4 +38,5 @@ public abstract class FileCallback extends AbsCallback<File> {
         response.close();
         return file;
     }
+
 }

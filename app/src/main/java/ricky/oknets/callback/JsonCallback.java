@@ -18,6 +18,10 @@ import ricky.oknet.utils.Error;
 import ricky.oknets.common.CommonResponse;
 import ricky.oknets.exception.TokenException;
 
+/**
+ * ricky.yao
+ * @param <T>
+ */
 public abstract class JsonCallback<T> extends AbsCallback<T> {
 
 
@@ -109,17 +113,20 @@ public abstract class JsonCallback<T> extends AbsCallback<T> {
 
     /**
      * success
-     * @param t t
+     *
+     * @param t         t
      * @param fromCache 是否来自缓存
      */
     public abstract void success(T t, boolean fromCache);
 
     /**
      * error
-     * @param error 错误类型
+     *
+     * @param error   错误类型
      * @param message 错误详细文本
      */
-    public abstract void error(Error error, String message);
+    public void error(Error error, String message) {
+    }
 
 
 }
