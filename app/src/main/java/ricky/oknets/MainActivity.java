@@ -11,12 +11,13 @@ import okhttp3.Call;
 import okhttp3.Response;
 import ricky.oknet.cache.CacheManager;
 import ricky.oknet.callback.FileCallback;
-import ricky.oknet.lifecycle.INetViewLifecycle;
 import ricky.oknet.lifecycle.INetQueue;
+import ricky.oknet.lifecycle.INetViewLifecycle;
 import ricky.oknet.lifecycle.NetQueue;
 import ricky.oknet.request.BaseRequest;
 import ricky.oknet.utils.Error;
 import ricky.oknets.callback.JsonCallback;
+import ricky.oknets.callback.JsonConvert;
 import ricky.oknets.request.Request;
 import ricky.oknets.utils.Api;
 
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements INetViewLifecycle
     }
 
     public void exec(View view) {
-        fileDownload();
+        getRx();
     }
 
     public void cancel(View view) {
@@ -131,7 +132,23 @@ public class MainActivity extends AppCompatActivity implements INetViewLifecycle
                 System.out.println();
             }
 
-        });
+        }, mQueue);
+    }
+
+    public void getRx() {
+        Api.getApi().get("param1", 2).rx(new JsonConvert<Request.Res>() {
+        }, new JsonCallback<Request.Res>() {
+            @Override
+            public void success(Request.Res res, boolean fromCache) {
+                System.out.println();
+            }
+
+            @Override
+            public void error(Error error, String message) {
+                super.error(error, message);
+            }
+        }, mQueue);
+
     }
 
     public void string() {

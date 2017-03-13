@@ -55,7 +55,7 @@ public abstract class AbsCallback<T> implements Converter<T> {
     }
 
     /** 请求失败，响应错误，数据解析错误等，都会回调该方法， UI线程 */
-    public void onError(Call call, Response response, Exception e) {
+    public void onError(Call call, Response response, Throwable e) {
 
         //使用错误解析器分发错误
         ExceptionParseMgr.Instance.parseException(e, new ExceptionParser.IHandler() {

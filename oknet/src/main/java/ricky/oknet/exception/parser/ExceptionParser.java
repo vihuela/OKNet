@@ -1,7 +1,6 @@
 package ricky.oknet.exception.parser;
 
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import ricky.oknet.utils.Error;
@@ -13,7 +12,7 @@ import ricky.oknet.utils.Error;
 public abstract class ExceptionParser {
     private ExceptionParser nextParser;
 
-    public static String getMessageFromThrowable(@NonNull Throwable e) {
+    public static String getMessageFromThrowable(Throwable e) {
         return !TextUtils.isEmpty(e.getMessage()) ? e.getMessage() : e.getClass().getSimpleName();
     }
 
@@ -37,7 +36,7 @@ public abstract class ExceptionParser {
     /**
      * @return true is resume error
      */
-    protected abstract boolean handler(@NonNull Throwable e, @NonNull IHandler handler);
+    protected abstract boolean handler(Throwable e, IHandler handler);
 
     private ExceptionParser getNextParser() {
         return nextParser;

@@ -37,7 +37,7 @@ public class JsonConvert<T> implements Converter<T> {
     public T convertSuccess(Response response) throws Exception {
         Type type = null;
         try {
-            type = ((ParameterizedType) this.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+            type = ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         } catch (ClassCastException e) {
             //没有传递泛型
             e.printStackTrace();

@@ -61,5 +61,8 @@ public interface HttpApi {
     @HEADER(key = "header_key", value = "header_val")
     Net<Request.Res> fileUpload(@Param("nick") String nick, @Param("avatar1") File avatar1,@Param("avatar2") File avatar2);
 
+    //Rx version
+
+
 
 }

@@ -1,7 +1,6 @@
 package ricky.oknet.retrofit;
 
 import android.graphics.Bitmap;
-import android.support.annotation.CheckResult;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -286,7 +285,6 @@ public class ApiProxyHandler<F> implements InvocationHandler {
      * @param <F>
      */
     public static interface ICustomerJsonBean<F> {
-        @CheckResult
         F onInterceptRequest(F f);
     }
 
