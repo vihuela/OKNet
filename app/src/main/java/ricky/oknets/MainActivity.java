@@ -223,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
                 super.error(error, message);
             }
         }, mQueue);
-
     }
 
     public void string() {
