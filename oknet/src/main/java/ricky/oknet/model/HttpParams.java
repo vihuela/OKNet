@@ -12,15 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.MediaType;
 
-/**
- * ================================================
- * 作    者：廖子尧
- * 版    本：1.0
- * 创建日期：2015/10/9
- * 描    述：请求参数的包装类，支持一个key对应多个值
- * 修订历史：
- * ================================================
- */
 public class HttpParams implements Serializable {
 
     private static final long serialVersionUID = 7369819159227055048L;

@@ -1,8 +1,5 @@
 package ricky.oknet.utils;
 
-/**
- * Created by ricky.yao on 2016/3/12
- */
 
 public enum Error {
     NetWork,//net not response or timeout etc 无网、超时等

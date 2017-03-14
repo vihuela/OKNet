@@ -12,13 +12,6 @@ import ricky.oknet.utils.Cons;
 import ricky.oknet.utils.Error;
 
 /**
- * ================================================
- * 作   者：廖子尧
- * 版   本：1.0
- * 创建日期：2016/1/14
- * 描   述：抽象的回调接口
- * 修订历史：
- * ================================================
  * <p>该类的回调具有如下顺序,虽然顺序写的很复杂,但是理解后,是很简单,并且合情合理的
  * <p>1.无缓存模式{@link CacheMode#NO_CACHE}<br>
  * ---网络请求成功 onBefore -> convertSuccess -> onSuccess -> onAfter<br>

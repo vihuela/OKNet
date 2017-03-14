@@ -5,10 +5,6 @@ import android.text.TextUtils;
 
 import ricky.oknet.utils.Error;
 
-/**
- * ricky.yao
- * Error dispatch
- */
 public abstract class ExceptionParser {
     private ExceptionParser nextParser;
 

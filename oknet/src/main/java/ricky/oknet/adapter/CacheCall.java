@@ -2,7 +2,6 @@ package ricky.oknet.adapter;
 
 import android.graphics.Bitmap;
 
-
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 
@@ -23,15 +22,6 @@ import ricky.oknet.request.BaseRequest;
 import ricky.oknet.utils.HeaderParser;
 import ricky.oknet.utils.HttpUtils;
 
-/**
- * ================================================
- * 作    者：廖子尧
- * 版    本：1.0
- * 创建日期：2016/9/11
- * 描    述：带缓存的请求
- * 修订历史：
- * ================================================
- */
 public class CacheCall<T> implements Call<T> {
 
     private volatile boolean canceled;
@@ -154,7 +144,7 @@ public class CacheCall<T> implements Call<T> {
                 //响应失败，一般为服务器内部错误，或者找不到页面等
                 if (responseCode == 404 || responseCode >= 500) {
                     String info = response.newBuilder().build().message();
-                    sendFailResultCallback(false, call, response, ServerException.INSTANCE("服务器数据异常：" + responseCode + " " + info));
+                    sendFailResultCallback(false, call, response, ServerException.INSTANCE(responseCode + " " + info));
                     return;
                 }
 

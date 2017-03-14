@@ -59,10 +59,17 @@ public interface HttpApi {
 
     @POST("upload")
     @HEADER(key = "header_key", value = "header_val")
-    Net<Request.Res> fileUpload(@Param("nick") String nick, @Param("avatar1") File avatar1,@Param("avatar2") File avatar2);
+    Net<Request.Res> fileUpload(@Param("nick") String nick, @Param("avatar1") File avatar1);
 
-    //Rx version
+    //error show
+    @GET("method")
+    Net<Request.Res> error_net(@Param("param1") String param1, @Param("param2") int param2);
 
+    @GET("method1111")
+    Net<Request.Res> error_server(@Param("param1") String param1, @Param("param2") int param2);
+
+    @GET("method")
+    Net<Request.Res1> error_internal(@Param("param1") String param1, @Param("param2") int param2);
 
 
 }

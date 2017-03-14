@@ -9,15 +9,6 @@ import ricky.oknet.model.HttpHeaders;
 import ricky.oknet.utils.HttpUtils;
 import ricky.oknet.utils.OkLogger;
 
-/**
- * ================================================
- * 作    者：廖子尧
- * 版    本：1.0
- * 创建日期：2016/1/16
- * 描    述：
- * 修订历史：
- * ================================================
- */
 public class DeleteRequest extends BaseBodyRequest<DeleteRequest> {
 
     public DeleteRequest(String url) {

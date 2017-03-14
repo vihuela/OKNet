@@ -3,9 +3,6 @@ package ricky.oknet.exception.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author Ricky.yao on 2016/5/16.
- */
 public enum ExceptionParseMgr {
     Instance;
 

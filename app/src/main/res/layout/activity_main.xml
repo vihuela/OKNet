@@ -2,30 +2,258 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+    android:orientation="vertical">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clear"
-        android:padding="20dp"
-        android:text="clear Cache" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="exec"
-        android:padding="20dp"
-        android:text="request" />
+        android:orientation="vertical">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="cancel"
-        android:padding="20dp"
-        android:text="cancel" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="回调方式：" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/get"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="get" />
+
+            <Button
+                android:id="@+id/post"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="post" />
+
+            <Button
+                android:id="@+id/upFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="upFile"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/downFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="downFile"
+                android:textAllCaps="false" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/head"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="head" />
+
+            <Button
+                android:id="@+id/option"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="option" />
+
+            <Button
+                android:id="@+id/put"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="put" />
+
+            <Button
+                android:id="@+id/delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="delete" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/json"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="json" />
+
+            <Button
+                android:id="@+id/string"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="string" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="Rx方式：" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/getRx"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="get" />
+
+            <Button
+                android:id="@+id/postRx"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="post" />
+
+            <Button
+                android:id="@+id/upFileRx"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="upFile"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/downFileRx"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="downFile"
+                android:textAllCaps="false" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/jsonRx"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="json" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="错误分发：" />
+
+
+        </TableRow>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/error_net"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="网络"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/error_server"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="服务器"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/error_internal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="内部"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/error_customer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="自定义"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/error_unKnow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="未知"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="操作：" />
+
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/clearCache"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="clearCache"
+                android:textAllCaps="false" />
+
+            <Button
+                android:id="@+id/cancelRequest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="cancelRequest"
+                android:textAllCaps="false" />
+
+
+        </TableRow>
+
+    </LinearLayout>
+
 </LinearLayout>

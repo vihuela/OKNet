@@ -26,15 +26,6 @@ import ricky.oknet.convert.Converter;
 import ricky.oknet.model.HttpHeaders;
 import ricky.oknet.model.HttpParams;
 
-/**
- * ================================================
- * 作    者：廖子尧
- * 版    本：1.0
- * 创建日期：2016/1/12
- * 描    述：所有请求的基类，其中泛型 R 主要用于属性设置方法后，返回对应的子类型，以便于实现链式调用
- * 修订历史：
- * ================================================
- */
 public abstract class BaseRequest<R extends BaseRequest> {
 
     protected String url;

@@ -7,10 +7,6 @@ import java.util.List;
 import ricky.oknet.retrofit.Net;
 import rx.Subscription;
 
-/**
- * @author ricky.yao on 2016/6/15.
- *         配合网络管理生命周期
- */
 public class NetQueue implements INetQueue {
 
     private List<Net<?>> mQueue = new LinkedList<>();

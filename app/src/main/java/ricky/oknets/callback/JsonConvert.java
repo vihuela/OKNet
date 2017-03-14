@@ -31,7 +31,7 @@ import ricky.oknets.exception.TokenException;
  */
 public class JsonConvert<T> implements Converter<T> {
 
-
+    
     @Override
     @SuppressWarnings("unchecked")
     public T convertSuccess(Response response) throws Exception {

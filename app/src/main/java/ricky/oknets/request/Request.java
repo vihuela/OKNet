@@ -42,4 +42,30 @@ public class Request {
             }
         }
     }
+    public static class Res1 extends CommonResponse {
+
+
+        public int data;
+
+
+        public static class DataBean implements Serializable {
+
+            public AuthorBean author;
+            public String des;
+            public String method;
+            public String url;
+            public String ip;
+
+            public static class AuthorBean implements Serializable {
+
+                public String des;
+                public String email;
+                public String address;
+                public String name;
+                public String github;
+                public String qq;
+                public String fullname;
+            }
+        }
+    }
 }

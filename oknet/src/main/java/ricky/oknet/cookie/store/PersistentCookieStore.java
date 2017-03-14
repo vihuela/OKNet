@@ -24,15 +24,6 @@ import okhttp3.Cookie;
 import okhttp3.HttpUrl;
 import ricky.oknet.OkGo;
 
-/**
- * ================================================
- * 作    者：廖子尧
- * 版    本：1.0
- * 创建日期：2016/1/14
- * 描    述：使用 SharedPreferences 持久化存储 cookie
- * 修订历史：
- * ================================================
- */
 public class PersistentCookieStore implements CookieStore {
 
     private static final String LOG_TAG = "PersistentCookieStore";

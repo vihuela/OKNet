@@ -15,15 +15,6 @@ import java.util.NoSuchElementException;
 import okhttp3.ResponseBody;
 import okio.Buffer;
 
-/**
- * ================================================
- * 作    者：Retrofit
- * 版    本：1.0
- * 创建日期：2016/9/11
- * 描    述：取自Retrofit的工具类
- * 修订历史：
- * ================================================
- */
 public class TypeUtils {
 
     public static final Type[] EMPTY_TYPE_ARRAY = new Type[0];

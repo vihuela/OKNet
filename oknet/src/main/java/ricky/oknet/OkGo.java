@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
-
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -17,6 +16,7 @@ import okhttp3.Call;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import ricky.oknet.cache.CacheEntity;
+import ricky.oknet.cache.CacheManager;
 import ricky.oknet.cache.CacheMode;
 import ricky.oknet.cookie.CookieJarImpl;
 import ricky.oknet.cookie.store.CookieStore;
@@ -32,19 +32,11 @@ import ricky.oknet.request.PostRequest;
 import ricky.oknet.request.PutRequest;
 import ricky.oknet.utils.OkLogger;
 
-/**
- * ================================================
- * 作    者：廖子尧
- * 版    本：1.0
- * 创建日期：2016/1/12
- * 描    述：网络请求的入口类
- * 修订历史：
- * ================================================
- */
 public class OkGo {
     public static final int DEFAULT_MILLISECONDS = 10000;       //默认的超时时间
     public static int REFRESH_TIME = 100;                       //回调刷新时间（单位ms）
-
+    private static Application context;                         //全局上下文
+    private static String baseUrl;                                     //全局baseUrl
     private Handler mDelivery;                                  //用于在主线程执行的调度器
     private OkHttpClient.Builder okHttpClientBuilder;           //ok请求的客户端
     private OkHttpClient okHttpClient;                          //ok请求的客户端
@@ -53,9 +45,7 @@ public class OkGo {
     private CacheMode mCacheMode;                               //全局缓存模式
     private int mRetryCount = 3;                                //全局超时重试次数
     private long mCacheTime = CacheEntity.CACHE_NEVER_EXPIRE;   //全局缓存过期时间,默认永不过期
-    private static Application context;                         //全局上下文
     private CookieJarImpl cookieJar;                            //全局 Cookie 实例
-    private static String baseUrl;                                     //全局baseUrl
 
     private OkGo() {
         okHttpClientBuilder = new OkHttpClient.Builder();
@@ -70,19 +60,69 @@ public class OkGo {
         return OkGoHolder.holder;
     }
 
-    private static class OkGoHolder {
-        private static OkGo holder = new OkGo();
-    }
-
-    /** 必须在全局Application先调用，获取context上下文，否则缓存无法使用 */
+    /**
+     * 必须在全局Application先调用，获取context上下文，否则缓存无法使用
+     */
     public static void init(Application app) {
         context = app;
     }
 
-    /** 获取全局上下文 */
+    /**
+     * 获取全局上下文
+     */
     public static Context getContext() {
-        if (context == null) throw new IllegalStateException("请先在全局Application中调用 OkGo.init() 初始化！");
+        if (context == null)
+            throw new IllegalStateException("请先在全局Application中调用 OkGo.init() 初始化！");
         return context;
+    }
+
+    /**
+     * get请求
+     */
+    public static GetRequest get(String url) {
+        return new GetRequest(getTargetUrl(url));
+    }
+
+    /**
+     * post请求
+     */
+    public static PostRequest post(String url) {
+        return new PostRequest(getTargetUrl(url));
+    }
+
+    /**
+     * put请求
+     */
+    public static PutRequest put(String url) {
+        return new PutRequest(getTargetUrl(url));
+    }
+
+    /**
+     * head请求
+     */
+    public static HeadRequest head(String url) {
+        return new HeadRequest(getTargetUrl(url));
+    }
+
+    /**
+     * delete请求
+     */
+    public static DeleteRequest delete(String url) {
+        return new DeleteRequest(getTargetUrl(url));
+    }
+
+    /**
+     * patch请求
+     */
+    public static OptionsRequest options(String url) {
+        return new OptionsRequest(getTargetUrl(url));
+    }
+
+    /**
+     * 拼接baseUrl
+     */
+    private static String getTargetUrl(String url) {
+        return !url.startsWith("http") || !url.startsWith("https") ? baseUrl + url : url;
     }
 
     public Handler getDelivery() {
@@ -94,42 +134,16 @@ public class OkGo {
         return okHttpClient;
     }
 
-    /** 对外暴露 OkHttpClient,方便自定义 */
+    /**
+     * 对外暴露 OkHttpClient,方便自定义
+     */
     public OkHttpClient.Builder getOkHttpClientBuilder() {
         return okHttpClientBuilder;
     }
 
-    /** get请求 */
-    public static GetRequest get(String url) {
-        return new GetRequest(getTargetUrl(url));
-    }
-
-    /** post请求 */
-    public static PostRequest post(String url) {
-        return new PostRequest(getTargetUrl(url));
-    }
-
-    /** put请求 */
-    public static PutRequest put(String url) {
-        return new PutRequest(getTargetUrl(url));
-    }
-
-    /** head请求 */
-    public static HeadRequest head(String url) {
-        return new HeadRequest(getTargetUrl(url));
-    }
-
-    /** delete请求 */
-    public static DeleteRequest delete(String url) {
-        return new DeleteRequest(getTargetUrl(url));
-    }
-
-    /** patch请求 */
-    public static OptionsRequest options(String url) {
-        return new OptionsRequest(getTargetUrl(url));
-    }
-
-    /** 调试模式,默认打开所有的异常调试 */
+    /**
+     * 调试模式,默认打开所有的异常调试
+     */
     public OkGo debug(String tag) {
         debug(tag, Level.INFO, true);
         return this;
@@ -140,15 +154,20 @@ public class OkGo {
      * 一般来说,这些异常是由于不标准的数据格式,或者特殊需要主动产生的,并不是框架错误,如果不想每次打印,这里可以关闭异常显示
      */
     public OkGo debug(String tag, Level level, boolean isPrintException) {
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(tag);
-        loggingInterceptor.setPrintLevel(HttpLoggingInterceptor.Level.BODY);
-        loggingInterceptor.setColorLevel(level);
-        okHttpClientBuilder.addInterceptor(loggingInterceptor);
-        OkLogger.debug(isPrintException);
+        if (isPrintException) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(tag);
+            loggingInterceptor.setPrintLevel(HttpLoggingInterceptor.Level.BODY);
+            loggingInterceptor.setColorLevel(level);
+            okHttpClientBuilder.addInterceptor(loggingInterceptor);
+        }
+
+        OkLogger.debug(tag, isPrintException);
         return this;
     }
 
-    /** https的自定义域名访问规则 */
+    /**
+     * https的自定义域名访问规则
+     */
     public OkGo setHostnameVerifier(HostnameVerifier hostnameVerifier) {
         okHttpClientBuilder.hostnameVerifier(hostnameVerifier);
         return this;
@@ -194,102 +213,136 @@ public class OkGo {
         return this;
     }
 
-    /** 全局cookie存取规则 */
+    /**
+     * 全局cookie存取规则
+     */
     public OkGo setCookieStore(CookieStore cookieStore) {
         cookieJar = new CookieJarImpl(cookieStore);
         okHttpClientBuilder.cookieJar(cookieJar);
         return this;
     }
 
-    /** 获取全局的cookie实例 */
+    /**
+     * 获取全局的cookie实例
+     */
     public CookieJarImpl getCookieJar() {
         return cookieJar;
     }
 
-    /** 全局读取超时时间 */
+    /**
+     * 全局读取超时时间
+     */
     public OkGo setReadTimeOut(long readTimeOut) {
         okHttpClientBuilder.readTimeout(readTimeOut, TimeUnit.MILLISECONDS);
         return this;
     }
 
-    /** 全局写入超时时间 */
+    /**
+     * 全局写入超时时间
+     */
     public OkGo setWriteTimeOut(long writeTimeout) {
         okHttpClientBuilder.writeTimeout(writeTimeout, TimeUnit.MILLISECONDS);
         return this;
     }
 
-    /** 全局连接超时时间 */
+    /**
+     * 全局连接超时时间
+     */
     public OkGo setConnectTimeout(long connectTimeout) {
         okHttpClientBuilder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
         return this;
     }
 
-    /** 超时重试次数 */
+    /**
+     * 超时重试次数
+     */
+    public int getRetryCount() {
+        return mRetryCount;
+    }
+
+    /**
+     * 超时重试次数
+     */
     public OkGo setRetryCount(int retryCount) {
         if (retryCount < 0) throw new IllegalArgumentException("retryCount must > 0");
         mRetryCount = retryCount;
         return this;
     }
 
-    /** 超时重试次数 */
-    public int getRetryCount() {
-        return mRetryCount;
+    /**
+     * 获取全局的缓存模式
+     */
+    public CacheMode getCacheMode() {
+        return mCacheMode;
     }
 
-    /** 全局的缓存模式 */
+    /**
+     * 全局的缓存模式
+     */
     public OkGo setCacheMode(CacheMode cacheMode) {
         mCacheMode = cacheMode;
         return this;
     }
 
-    /** 获取全局的缓存模式 */
-    public CacheMode getCacheMode() {
-        return mCacheMode;
+    /**
+     * 获取全局的缓存过期时间
+     */
+    public long getCacheTime() {
+        return mCacheTime;
     }
 
-    /** 全局的缓存过期时间 */
+    /**
+     * 全局的缓存过期时间
+     */
     public OkGo setCacheTime(long cacheTime) {
         if (cacheTime <= -1) cacheTime = CacheEntity.CACHE_NEVER_EXPIRE;
         mCacheTime = cacheTime;
         return this;
     }
 
-    /** 获取全局的缓存过期时间 */
-    public long getCacheTime() {
-        return mCacheTime;
-    }
-
-    /** 获取全局公共请求参数 */
+    /**
+     * 获取全局公共请求参数
+     */
     public HttpParams getCommonParams() {
         return mCommonParams;
     }
 
-    /** 添加全局公共请求参数 */
+    /**
+     * 添加全局公共请求参数
+     */
     public OkGo addCommonParams(HttpParams commonParams) {
         if (mCommonParams == null) mCommonParams = new HttpParams();
         mCommonParams.put(commonParams);
         return this;
     }
 
-    /** 获取全局公共请求头 */
+    /**
+     * 获取全局公共请求头
+     */
     public HttpHeaders getCommonHeaders() {
         return mCommonHeaders;
     }
 
-    /** 添加全局公共请求参数 */
+    /**
+     * 添加全局公共请求参数
+     */
     public OkGo addCommonHeaders(HttpHeaders commonHeaders) {
         if (mCommonHeaders == null) mCommonHeaders = new HttpHeaders();
         mCommonHeaders.put(commonHeaders);
         return this;
     }
 
-    /** 添加全局拦截器 */
+    /**
+     * 添加全局拦截器
+     */
     public OkGo addInterceptor(Interceptor interceptor) {
         okHttpClientBuilder.addInterceptor(interceptor);
         return this;
     }
 
-    /** 根据Tag取消请求 */
+    /**
+     * 根据Tag取消请求
+     */
     public void cancelTag(Object tag) {
         for (Call call : getOkHttpClient().dispatcher().queuedCalls()) {
             if (tag.equals(call.request().tag())) {
@@ -303,7 +356,9 @@ public class OkGo {
         }
     }
 
-    /** 取消所有请求请求 */
+    /**
+     * 取消所有请求请求
+     */
     public void cancelAll() {
         for (Call call : getOkHttpClient().dispatcher().queuedCalls()) {
             call.cancel();
@@ -313,14 +368,22 @@ public class OkGo {
         }
     }
 
-    /** 设置baseUrl*/
+    /**
+     * 设置baseUrl
+     */
     public OkGo baseUrl(String baseUrl) {
         OkGo.baseUrl = baseUrl;
         return this;
     }
 
-    /** 拼接baseUrl*/
-    private  static String getTargetUrl(String url) {
-        return !url.startsWith("http") || !url.startsWith("https") ? baseUrl + url : url;
+    /**
+     * 清除缓存
+     */
+    public void clearCache() {
+        CacheManager.INSTANCE.clear();
+    }
+
+    private static class OkGoHolder {
+        private static OkGo holder = new OkGo();
     }
 }

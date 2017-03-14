@@ -17,17 +17,9 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.internal.http.HttpHeaders;
 import okio.Buffer;
+import ricky.oknet.utils.JsonPrinter;
 import ricky.oknet.utils.OkLogger;
 
-/**
- * ================================================
- * 作    者：廖子尧
- * 版    本：1.0
- * 创建日期：2016/1/12
- * 描    述：OkHttp拦截器，主要用于打印日志
- * 修订历史：
- * ================================================
- */
 public class HttpLoggingInterceptor implements Interceptor {
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
@@ -45,6 +37,7 @@ public class HttpLoggingInterceptor implements Interceptor {
 
     public HttpLoggingInterceptor(String tag) {
         logger = Logger.getLogger(tag);
+        JsonPrinter.TAG = tag;
     }
 
     public void setPrintLevel(Level level) {
@@ -134,8 +127,14 @@ public class HttpLoggingInterceptor implements Interceptor {
                 log(" ");
                 if (logBody && HttpHeaders.hasBody(clone)) {
                     if (isPlaintext(responseBody.contentType())) {
-                        String body = responseBody.string();
-                        log("\tbody:" + body);
+                        final String body = responseBody.string();
+                        log("\tbody:" );
+                        JsonPrinter.json(body, new Runnable() {
+                            @Override
+                            public void run() {
+                                log(body);
+                            }
+                        });
                         responseBody = ResponseBody.create(responseBody.contentType(), body);
                         return response.newBuilder().body(responseBody).build();
                     } else {
@@ -182,7 +181,14 @@ public class HttpLoggingInterceptor implements Interceptor {
             if (contentType != null) {
                 charset = contentType.charset(UTF8);
             }
-            log("\tbody:" + buffer.readString(charset));
+            final String s = buffer.readString(charset);
+            log("\tbody:" );
+            JsonPrinter.json(s, new Runnable() {
+                @Override
+                public void run() {
+                    log(s);
+                }
+            });
         } catch (Exception e) {
             e.printStackTrace();
         }

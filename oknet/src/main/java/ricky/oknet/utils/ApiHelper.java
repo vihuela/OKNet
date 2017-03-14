@@ -5,9 +5,6 @@ import java.lang.reflect.Proxy;
 import ricky.oknet.retrofit.ApiProxyHandler;
 
 
-/**
- * @author Ricky.yao on 2016/5/25.
- */
 @SuppressWarnings("all")
 public class ApiHelper {
     /**

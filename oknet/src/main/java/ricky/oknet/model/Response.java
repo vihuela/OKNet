@@ -2,15 +2,6 @@ package ricky.oknet.model;
 
 import okhttp3.Headers;
 
-/**
- * ================================================
- * 作    者：廖子尧
- * 版    本：1.0
- * 创建日期：2016/9/11
- * 描    述：响应体的包装类
- * 修订历史：
- * ================================================
- */
 public final class Response<T> {
 
     private final okhttp3.Response rawResponse;

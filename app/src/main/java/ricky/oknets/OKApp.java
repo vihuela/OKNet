@@ -2,6 +2,9 @@ package ricky.oknets;
 
 import android.app.Application;
 
+import com.blankj.utilcode.utils.ToastUtils;
+import com.blankj.utilcode.utils.Utils;
+
 import java.util.logging.Level;
 
 import ricky.oknet.OkGo;
@@ -15,8 +18,12 @@ public class OKApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        //util
+        Utils.init(this);
+        ToastUtils.init(true);
+        //net
         OkGo.init(this);
+
 
         HttpHeaders headers = new HttpHeaders();
 //        headers.put("commonHeaderKey1", "commonHeaderValue1");    //所有的 header 都 不支持 中文
