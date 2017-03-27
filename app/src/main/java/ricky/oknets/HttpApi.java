@@ -16,6 +16,7 @@ import ricky.oknet.retrofit.anno.OPTIONS;
 import ricky.oknet.retrofit.anno.POST;
 import ricky.oknet.retrofit.anno.PUT;
 import ricky.oknet.retrofit.anno.Param;
+import ricky.oknet.retrofit.anno.Path;
 import ricky.oknet.retrofit.anno.STRING;
 import ricky.oknet.retrofit.anno.StringParam;
 import ricky.oknets.request.Request;
@@ -70,6 +71,9 @@ public interface HttpApi {
 
     @GET("method")
     Net<Request.Res1> error_internal(@Param("param1") String param1, @Param("param2") int param2);
+
+    @GET("http://gank.io/api/data/%E7%A6%8F%E5%88%A9/{size}/{page}")
+    Net<Request.Res2> imageList(@Path("size") int size, @Path("page") int page/*, @Param("param") String param*/);
 
 
 }

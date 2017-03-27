@@ -1,7 +1,9 @@
 package ricky.oknets.request;
 
 import java.io.Serializable;
+import java.util.List;
 
+import ricky.oknet.utils.INoProguard;
 import ricky.oknets.common.CommonRequest;
 import ricky.oknets.common.CommonResponse;
 
@@ -42,6 +44,7 @@ public class Request {
             }
         }
     }
+
     public static class Res1 extends CommonResponse {
 
 
@@ -67,5 +70,26 @@ public class Request {
                 public String fullname;
             }
         }
+    }
+
+    public static class Res2 implements INoProguard {
+
+
+        public boolean error;
+        public List<Item> results;
+
+        static class Item implements INoProguard {
+            public String _id;
+            public String createdAt;
+            public String desc;
+            public String publishedAt;
+            public String source;
+            public String type;
+            public String url;
+            public boolean used;
+            public String who;
+        }
+
+
     }
 }

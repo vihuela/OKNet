@@ -250,7 +250,12 @@
                 android:layout_height="wrap_content"
                 android:text="cancelRequest"
                 android:textAllCaps="false" />
-
+            <Button
+                android:id="@+id/imageList"
+                android:layout_width="wrap_content"
+                android:textAllCaps="false"
+                android:layout_height="wrap_content"
+                android:text="ImageList" />
 
         </TableRow>
 

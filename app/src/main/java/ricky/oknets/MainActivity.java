@@ -356,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void error(Error error, String message) {
-                OkLogger.d("++++++++++++++++++++++"+"错误类型："+error + " 文本:" + message);
+                OkLogger.d("++++++++++++++++++++++" + "错误类型：" + error + " 文本:" + message);
             }
 
         }, mQueue);
@@ -374,7 +374,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void error(Error error, String message) {
-                OkLogger.d("++++++++++++++++++++++"+"错误类型："+error + " 文本:" + message);
+                OkLogger.d("++++++++++++++++++++++" + "错误类型：" + error + " 文本:" + message);
             }
 
         }, mQueue);
@@ -392,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void error(Error error, String message) {
-                OkLogger.d("++++++++++++++++++++++"+"错误类型："+error + " 文本:" + message);
+                OkLogger.d("++++++++++++++++++++++" + "错误类型：" + error + " 文本:" + message);
             }
 
         }, mQueue);
@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void error(Error error, String message) {
-                OkLogger.d("++++++++++++++++++++++"+"错误类型："+error + " 文本:" + message);
+                OkLogger.d("++++++++++++++++++++++" + "错误类型：" + error + " 文本:" + message);
             }
 
         }, mQueue);
@@ -430,14 +430,29 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void error(Error error, String message) {
-                OkLogger.d("++++++++++++++++++++++"+"错误类型："+error + " 文本:" + message);
+                OkLogger.d("++++++++++++++++++++++" + "错误类型：" + error + " 文本:" + message);
             }
 
         }, mQueue);
     }
 
+    //
+    private void imageList() {
+        Api.getApi().imageList(20, 0).execute(new JsonCallback<Request.Res2>() {
 
-    @OnClick({R.id.get, R.id.post, R.id.upFile, R.id.downFile, R.id.head, R.id.option, R.id.put, R.id.delete, R.id.json, R.id.string, R.id.getRx, R.id.postRx, R.id.upFileRx, R.id.downFileRx, R.id.jsonRx, R.id.clearCache, R.id.cancelRequest, R.id.error_net, R.id.error_server, R.id.error_internal, R.id.error_customer, R.id.error_unKnow})
+            @Override
+            public void success(Request.Res2 res, boolean fromCache) {
+                System.out.println();
+            }
+
+            @Override
+            public void error(Error error, String message) {
+            }
+
+        }, mQueue);
+    }
+
+    @OnClick({R.id.get, R.id.post, R.id.upFile, R.id.downFile, R.id.head, R.id.option, R.id.put, R.id.delete, R.id.json, R.id.string, R.id.getRx, R.id.postRx, R.id.upFileRx, R.id.downFileRx, R.id.jsonRx, R.id.clearCache, R.id.cancelRequest, R.id.error_net, R.id.error_server, R.id.error_internal, R.id.error_customer, R.id.error_unKnow, R.id.imageList})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.get:
@@ -506,8 +521,12 @@ public class MainActivity extends AppCompatActivity {
             case R.id.error_unKnow:
                 error_unKnow();
                 break;
+            case R.id.imageList:
+                imageList();
+                break;
         }
     }
+
 
     @Override
     protected void onDestroy() {

@@ -8,6 +8,7 @@
 - 独立完善的错误分发机制，清晰且容易定制的自定义异常，再也无须手动判断Exception对象
 - 支持网络请求与页面绑定，网络队列可写于页面Base类中，网络请求随着页面销毁而取消
 - JSON请求下支持参数拦截
+- 支持Url占位符替换
 
 
 
@@ -40,6 +41,9 @@
     @POST("upload")
     @HEADER(key = "header_key", value = "header_val")
     Net<Request.Res> fileUpload(@Param("nick") String nick, @Param("avatar1") File avatar1);
+
+	@GET("http://gank.io/api/data/%E7%A6%8F%E5%88%A9/{size}/{page}")
+    Net<Request.Res2> imageList(@Path("size") int size, @Path("page") int page);
 
 
 ### Usage ###
@@ -87,10 +91,19 @@
 ![](http://i.imgur.com/1GnKtmG.png)
 
 
-### Gradle ###
+### Use ###
 
 
-compile 'com.ricky:oknet:1.2.3'
+	<dependency>
+	  <groupId>com.ricky</groupId>
+	  <artifactId>oknet</artifactId>
+	  <version>1.2.4</version>
+	  <type>pom</type>
+	</dependency>
+
+	Or
+
+	compile 'com.ricky:oknet:1.2.4'
 
 
 ### Proguard ###

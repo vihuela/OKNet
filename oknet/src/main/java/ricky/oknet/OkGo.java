@@ -122,7 +122,7 @@ public class OkGo {
      * 拼接baseUrl
      */
     private static String getTargetUrl(String url) {
-        return !url.startsWith("http") || !url.startsWith("https") ? baseUrl + url : url;
+        return !url.startsWith("http") && !url.startsWith("https") ? baseUrl + url : url;
     }
 
     public Handler getDelivery() {

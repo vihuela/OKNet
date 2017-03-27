@@ -12,7 +12,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import ricky.oknet.cache.CacheEntity;
 import ricky.oknet.cache.CacheMode;
@@ -31,6 +33,7 @@ import ricky.oknet.retrofit.anno.OPTIONS;
 import ricky.oknet.retrofit.anno.POST;
 import ricky.oknet.retrofit.anno.PUT;
 import ricky.oknet.retrofit.anno.Param;
+import ricky.oknet.retrofit.anno.Path;
 import ricky.oknet.retrofit.anno.STRING;
 import ricky.oknet.retrofit.anno.StringParam;
 import ricky.oknet.utils.DataConvert;
@@ -78,6 +81,35 @@ public class ApiProxyHandler<F> implements InvocationHandler {
             }
         }
         return parameteNames;
+    }
+
+    /**
+     * 替换url中path对应的占位符
+     */
+    public static String getMethodPathParameterNamesByAnnotation(Method method, Object[] objects, String Ourl) {
+        String url = Ourl;
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        if (parameterAnnotations == null || parameterAnnotations.length == 0) {
+            return url;
+        }
+
+        Map<String, String> paths = new HashMap<>();
+        int i = 0;
+        for (Annotation[] parameterAnnotation : parameterAnnotations) {
+            for (Annotation annotation : parameterAnnotation) {
+                //path
+                if (annotation instanceof Path) {
+                    paths.put(((Path) annotation).value(), objects[i].toString());
+                    i++;
+                }
+            }
+        }
+        if (paths.size() != 0) {
+            for (Map.Entry<String, String> entry : paths.entrySet()) {
+                url = url.replace("{" + entry.getKey() + "}", entry.getValue());
+            }
+        }
+        return url;
     }
 
     @Override
@@ -187,6 +219,7 @@ public class ApiProxyHandler<F> implements InvocationHandler {
             case HEAD:
             case OPTIONS:
             case PUT:
+                netRequestData.url = getMethodPathParameterNamesByAnnotation(method, objs, netRequestData.url);
                 List<String> paramsName = getMethodParameterNamesByAnnotation(method);
                 int i = 0;
                 for (String name : paramsName) {
