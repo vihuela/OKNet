@@ -42,7 +42,7 @@ import ricky.oknet.utils.DataConvert;
 public class ApiProxyHandler<F> implements InvocationHandler {
 
     private NetRequestData.HttpRequestType type;
-    private CacheMode cacheMode;
+    private CacheMode cacheMode = CacheMode.NO_CACHE;
     private long cacheTime = CacheEntity.CACHE_NEVER_EXPIRE;
     private NetRequestData.Header header;
     private String url;
@@ -151,6 +151,8 @@ public class ApiProxyHandler<F> implements InvocationHandler {
             if (method.isAnnotationPresent(CacheTime.class)) {
                 cacheTime = method.getAnnotation(CacheTime.class).value();
             }
+        }else{
+            cacheMode = null;
         }
 
         //header
@@ -158,6 +160,8 @@ public class ApiProxyHandler<F> implements InvocationHandler {
             header = new NetRequestData.Header();
             header.key = method.getAnnotation(HEADER.class).key();
             header.value = method.getAnnotation(HEADER.class).value();
+        }else{
+            header = null;
         }
 
         return new Net(generateDataObject(method, args));

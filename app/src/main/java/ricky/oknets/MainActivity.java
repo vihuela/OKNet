@@ -436,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
         }, mQueue);
     }
 
-    //
+    //api演示
     private void imageList() {
         Api.getApi().imageList(20, 0).execute(new JsonCallback<Request.Res2>() {
 
@@ -452,7 +452,36 @@ public class MainActivity extends AppCompatActivity {
         }, mQueue);
     }
 
-    @OnClick({R.id.get, R.id.post, R.id.upFile, R.id.downFile, R.id.head, R.id.option, R.id.put, R.id.delete, R.id.json, R.id.string, R.id.getRx, R.id.postRx, R.id.upFileRx, R.id.downFileRx, R.id.jsonRx, R.id.clearCache, R.id.cancelRequest, R.id.error_net, R.id.error_server, R.id.error_internal, R.id.error_customer, R.id.error_unKnow, R.id.imageList})
+    //api演示
+    private void newsList1() {
+        Api.getApi().getNewForLast().execute(new JsonCallback<Request.Res3>() {
+            @Override
+            public void success(Request.Res3 res, boolean fromCache) {
+                System.out.println();
+            }
+
+            @Override
+            public void error(Error error, String message) {
+                super.error(error, message);
+            }
+        }, mQueue);
+    }
+
+    private void newsList2() {
+        Api.getApi().getNewForDate("20170405").execute(new JsonCallback<Request.Res3>() {
+            @Override
+            public void success(Request.Res3 res, boolean fromCache) {
+                System.out.println();
+            }
+
+            @Override
+            public void error(Error error, String message) {
+                super.error(error, message);
+            }
+        }, mQueue);
+    }
+
+    @OnClick({R.id.get, R.id.post, R.id.upFile, R.id.downFile, R.id.head, R.id.option, R.id.put, R.id.delete, R.id.json, R.id.string, R.id.getRx, R.id.postRx, R.id.upFileRx, R.id.downFileRx, R.id.jsonRx, R.id.clearCache, R.id.cancelRequest, R.id.error_net, R.id.error_server, R.id.error_internal, R.id.error_customer, R.id.error_unKnow, R.id.imageList, R.id.newsList1, R.id.newsList2})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.get:
@@ -523,6 +552,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.imageList:
                 imageList();
+                break;
+            case R.id.newsList1:
+                newsList1();
+                break;
+            case R.id.newsList2:
+                newsList2();
                 break;
         }
     }

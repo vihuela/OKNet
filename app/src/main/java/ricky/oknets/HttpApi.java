@@ -75,5 +75,12 @@ public interface HttpApi {
     @GET("http://gank.io/api/data/%E7%A6%8F%E5%88%A9/{size}/{page}")
     Net<Request.Res2> imageList(@Path("size") int size, @Path("page") int page/*, @Param("param") String param*/);
 
+    @CACHE(CacheMode.FIRST_CACHE_THEN_REQUEST)
+    @GET("http://news-at.zhihu.com/api/4/news/latest")
+    Net<Request.Res3> getNewForLast();
+
+    @GET("http://news-at.zhihu.com/api/4/news/before/{date}")
+    Net<Request.Res3> getNewForDate(@Path("date") String date);
+
 
 }

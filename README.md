@@ -97,13 +97,13 @@
 	<dependency>
 	  <groupId>com.ricky</groupId>
 	  <artifactId>oknet</artifactId>
-	  <version>1.2.4</version>
+	  <version>1.2.6</version>
 	  <type>pom</type>
 	</dependency>
 
 	Or
 
-	compile 'com.ricky:oknet:1.2.4'
+	compile 'com.ricky:oknet:1.2.6'
 
 
 ### Proguard ###
